@@ -259,44 +259,44 @@ function SkillsPage() {
     }
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 max-w-7xl mx-auto p-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 max-w-7xl mx-auto p-2 sm:p-3 md:p-4">
             <Card className="bg-gradient-to-br from-teal-50/30 to-teal-50/30 dark:from-teal-950/30 dark:to-teal-950/30 border-teal-100 dark:border-teal-900">
                 <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                        <StarIcon className="h-5 w-5 text-teal-500" />
-                        <CardTitle>Key Skills</CardTitle>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                        <StarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500" />
+                        <CardTitle className="text-base sm:text-lg md:text-xl">Key Skills</CardTitle>
                     </div>
-                    <CardDescription>Add and manage your core technical skills with icons</CardDescription>
+                    <CardDescription className="text-sm sm:text-base">Add and manage your core technical skills with icons</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col space-y-2 mb-4">
-                        <div className="flex items-center gap-2">
-                            <CodeIcon className="h-4 w-4 text-teal-500" />
+                    <div className="flex flex-col space-y-2 mb-3 sm:mb-4">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                            <CodeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
                             <Input placeholder="Add key skill name" value={newKeySkill.name} onChange={(e) => setNewKeySkill({ ...newKeySkill, name: e.target.value })} disabled={isLoading} className="bg-white/80 dark:bg-gray-950/60" />
                         </div>
-                        <div className="flex space-x-2">
-                            <div className="flex items-center gap-2 flex-1">
-                                <ImageIcon className="h-4 w-4 text-teal-500" />
+                        <div className="flex space-x-1.5 sm:space-x-2">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-1">
+                                <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
                                 <Input placeholder="Add skill image URL" value={newKeySkill.imageUrl} onChange={(e) => setNewKeySkill({ ...newKeySkill, imageUrl: e.target.value })} disabled={isLoading} className="bg-white/80 dark:bg-gray-950/60" />
                             </div>
                             <Button onClick={addKeySkill} disabled={isLoading} variant="outline" className="border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950">
-                                <PlusIcon className="h-4 w-4 text-teal-500" />
+                                <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
                             </Button>
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {keySkills.length === 0 ? (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <InfoIcon className="h-4 w-4" />
+                            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                                <InfoIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 <span>No key skills added yet</span>
                             </div>
                         ) : (
                             keySkills.map((skill, index) => (
-                                <div key={index} className="flex items-center gap-1 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 px-3 py-1 rounded-lg border border-teal-200 dark:border-teal-800">
-                                    {skill.imageUrl && <img src={skill.imageUrl} alt={skill.name} className="h-4 w-4" />}
-                                    <span className="text-sm">{skill.name}</span>
-                                    <Button variant="ghost" size="icon" onClick={() => removeKeySkill(skill)} className="h-5 w-5 hover:text-red-500">
-                                        <Cross2Icon className="h-3 w-3" />
+                                <div key={index} className="flex items-center gap-1 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg border border-teal-200 dark:border-teal-800">
+                                    {skill.imageUrl && <img src={skill.imageUrl} alt={skill.name} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                                    <span className="text-xs sm:text-sm">{skill.name}</span>
+                                    <Button variant="ghost" size="icon" onClick={() => removeKeySkill(skill)} className="h-4 w-4 sm:h-5 sm:w-5 hover:text-red-500">
+                                        <Cross2Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                     </Button>
                                 </div>
                             ))
@@ -305,20 +305,20 @@ function SkillsPage() {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
                 <Card className="bg-gradient-to-br from-teal-50/30 to-teal-50/30 dark:from-teal-950/30 dark:to-teal-950/30 border-teal-100 dark:border-teal-900">
                     <CardHeader className="pb-2">
-                        <div className="flex items-center gap-2">
-                            <FolderIcon className="h-5 w-5 text-teal-500" />
-                            <CardTitle>Add New Category</CardTitle>
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                            <FolderIcon className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500" />
+                            <CardTitle className="text-base sm:text-lg md:text-xl">Add New Category</CardTitle>
                         </div>
-                        <CardDescription>Create a new category to group related skills together</CardDescription>
+                        <CardDescription className="text-sm sm:text-base">Create a new category to group related skills together</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1.5 sm:space-x-2">
                             <Input placeholder="Category Name" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} disabled={isLoading} className="bg-white/80 dark:bg-gray-950/60" />
                             <Button onClick={addCategory} disabled={isLoading} variant="outline" className="border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950">
-                                <PlusIcon className="h-4 w-4 text-teal-500" />
+                                <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
                             </Button>
                         </div>
                     </CardContent>
@@ -326,23 +326,23 @@ function SkillsPage() {
 
                 <Card className="bg-gradient-to-br from-teal-50/30 to-teal-50/30 dark:from-teal-950/30 dark:to-teal-950/30 border-teal-100 dark:border-teal-900 overflow-hidden">
                     <CardHeader className="pb-2 relative">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-teal-100/20 dark:bg-teal-900/20 rounded-full -translate-y-1/2 translate-x-1/2" />
-                        <div className="flex items-center gap-2 relative">
-                            <GearIcon className="h-5 w-5 text-teal-500 animate-spin-slow" />
-                            <CardTitle>Add New Skill</CardTitle>
+                        <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-teal-100/20 dark:bg-teal-900/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+                        <div className="flex items-center gap-1.5 sm:gap-2 relative">
+                            <GearIcon className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 animate-spin-slow" />
+                            <CardTitle className="text-base sm:text-lg md:text-xl">Add New Skill</CardTitle>
                         </div>
-                        <CardDescription className="mt-1">Add a skill to an existing category with proficiency level</CardDescription>
+                        <CardDescription className="mt-1 text-sm sm:text-base">Add a skill to an existing category with proficiency level</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col space-y-3 relative">
+                        <div className="flex flex-col space-y-2 sm:space-y-3 relative">
                             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                                 <SelectTrigger className="bg-white/80 dark:bg-gray-950/60 border-teal-200 dark:border-teal-800">
                                     <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {categories.length === 0 ? (
-                                        <div className="p-2 text-sm text-muted-foreground flex items-center">
-                                            <InfoIcon className="h-4 w-4 mr-2" />
+                                        <div className="p-2 text-xs sm:text-sm text-muted-foreground flex items-center">
+                                            <InfoIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                                             No categories available
                                         </div>
                                     ) : (
@@ -354,55 +354,57 @@ function SkillsPage() {
                                     )}
                                 </SelectContent>
                             </Select>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                                 <div className="relative">
-                                    <Input placeholder="Skill Name" value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} disabled={isLoading || !selectedCategory} className="bg-white/80 dark:bg-gray-950/60 pl-9 border-teal-200 dark:border-teal-800" />
-                                    <CodeIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-teal-500" />
+                                    <Input placeholder="Skill Name" value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} disabled={isLoading || !selectedCategory} className="bg-white/80 dark:bg-gray-950/60 pl-8 sm:pl-9 border-teal-200 dark:border-teal-800" />
+                                    <CodeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-teal-500" />
                                 </div>
                                 <div className="relative">
-                                    <Input placeholder="Image URL" value={newSkill.imageUrl} onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} disabled={isLoading || !selectedCategory} className="bg-white/80 dark:bg-gray-950/60 pl-9 border-teal-200 dark:border-teal-800" />
-                                    <ImageIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-teal-500" />
+                                    <Input placeholder="Image URL" value={newSkill.imageUrl} onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} disabled={isLoading || !selectedCategory} className="bg-white/80 dark:bg-gray-950/60 pl-8 sm:pl-9 border-teal-200 dark:border-teal-800" />
+                                    <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-teal-500" />
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-teal-50/50 dark:bg-teal-900/20 rounded-lg">
-                                <div className="flex items-center space-x-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-teal-50/50 dark:bg-teal-900/20 rounded-lg">
+                                <div className="flex items-center space-x-1.5 sm:space-x-2 mb-2 sm:mb-0">
                                     <Switch checked={showProficiency} onCheckedChange={setShowProficiency} id="show-proficiency" className="data-[state=checked]:bg-teal-500" />
-                                    <label htmlFor="show-proficiency" className="text-sm flex items-center gap-1">
-                                        <StarIcon className="h-4 w-4 text-teal-500" />
+                                    <label htmlFor="show-proficiency" className="text-xs sm:text-sm flex items-center gap-1">
+                                        <StarIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
                                         Show Proficiency Level
                                     </label>
                                 </div>
-                                {showProficiency && (
-                                    <Input type="number" min="0" max="100" placeholder="Level" value={newSkill.level} onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} disabled={isLoading || !selectedCategory} className="w-24 bg-white/80 dark:bg-gray-950/80 border-teal-200 dark:border-teal-800" />
-                                )}
-                                <Button onClick={addSkill} disabled={isLoading || !selectedCategory} className="bg-teal-500 hover:bg-teal-600 text-white">
-                                    <PlusIcon className="h-4 w-4 mr-1" />
-                                    Add
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                    {showProficiency && (
+                                        <Input type="number" min="0" max="100" placeholder="Level" value={newSkill.level} onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} disabled={isLoading || !selectedCategory} className="w-20 sm:w-24 bg-white/80 dark:bg-gray-950/80 border-teal-200 dark:border-teal-800" />
+                                    )}
+                                    <Button onClick={addSkill} disabled={isLoading || !selectedCategory} className="bg-teal-500 hover:bg-teal-600 text-white">
+                                        <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                                        Add
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {categories.length === 0 ? (
-                    <div className="col-span-full flex items-center justify-center gap-2 py-8 text-muted-foreground">
-                        <InfoIcon className="h-5 w-5" />
+                    <div className="col-span-full flex items-center justify-center gap-1.5 sm:gap-2 py-6 sm:py-8 text-sm sm:text-base text-muted-foreground">
+                        <InfoIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                         <span>No categories added yet. Add a category to get started.</span>
                     </div>
                 ) : (
                     categories.map((category) => (
-                        <div key={category.name} className="bg-gradient-to-br from-gray-50/50 to-gray-50/50 dark:from-gray-900/50 dark:to-gray-900/50 rounded-xl p-4 border border-gray-200 dark:border-gray-800">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-2">
-                                    <FolderIcon className="h-4 w-4 text-teal-500" />
-                                    <h2 className="text-lg font-semibold tracking-tight text-foreground/90">{category.name}</h2>
+                        <div key={category.name} className="bg-gradient-to-br from-gray-50/50 to-gray-50/50 dark:from-gray-900/50 dark:to-gray-900/50 rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-800">
+                            <div className="flex items-center justify-between mb-3 sm:mb-4">
+                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                    <FolderIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
+                                    <h2 className="text-base sm:text-lg font-semibold tracking-tight text-foreground/90">{category.name}</h2>
                                 </div>
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="icon" disabled={isLoading} className="h-8 w-8 hover:text-red-500">
-                                            <TrashIcon className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" disabled={isLoading} className="h-7 w-7 sm:h-8 sm:w-8 hover:text-red-500">
+                                            <TrashIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         </Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
@@ -417,29 +419,29 @@ function SkillsPage() {
                                     </AlertDialogContent>
                                 </AlertDialog>
                             </div>
-                            <div className="space-y-3">
+                            <div className="space-y-2 sm:space-y-3">
                                 {category.skills?.length === 0 ? (
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <InfoIcon className="h-4 w-4" />
+                                    <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                                        <InfoIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         <span>No skills added to this category yet</span>
                                     </div>
                                 ) : (
                                     category.skills?.map((skill) => (
                                         <div key={skill.name} className="group">
-                                            <div className="flex items-center justify-between mb-1.5">
-                                                <div className="flex items-center gap-2">
-                                                    {skill.imageUrl ? <img src={skill.imageUrl} alt={skill.name} className="h-4 w-4" /> : <CodeIcon className="h-3 w-3 text-teal-500" />}
-                                                    <span className="text-sm font-medium text-foreground/80">{skill.name}</span>
+                                            <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+                                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                                    {skill.imageUrl ? <img src={skill.imageUrl} alt={skill.name} className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <CodeIcon className="h-3 w-3 text-teal-500" />}
+                                                    <span className="text-xs sm:text-sm font-medium text-foreground/80">{skill.name}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    {skill.level !== undefined && <span className="text-xs text-muted-foreground">{skill.level}%</span>}
-                                                    <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <GearIcon className="h-3 w-3" />
+                                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                                    {skill.level !== undefined && <span className="text-[10px] sm:text-xs text-muted-foreground">{skill.level}%</span>}
+                                                    <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} className="h-5 w-5 sm:h-6 sm:w-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <GearIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                                     </Button>
                                                     <AlertDialog>
                                                         <AlertDialogTrigger asChild>
-                                                            <Button variant="ghost" size="icon" disabled={isLoading} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500">
-                                                                <Cross2Icon className="h-3 w-3" />
+                                                            <Button variant="ghost" size="icon" disabled={isLoading} className="h-5 w-5 sm:h-6 sm:w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500">
+                                                                <Cross2Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                                             </Button>
                                                         </AlertDialogTrigger>
                                                         <AlertDialogContent>
@@ -456,7 +458,7 @@ function SkillsPage() {
                                                 </div>
                                             </div>
                                             {skill.level !== undefined && (
-                                                <div className="h-1 bg-muted/30 rounded-full overflow-hidden">
+                                                <div className="h-0.5 sm:h-1 bg-muted/30 rounded-full overflow-hidden">
                                                     <div className="h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full transition-all duration-300" style={{ width: `${skill.level}%` }} />
                                                 </div>
                                             )}
