@@ -32,7 +32,7 @@ const ACTIVITY_TYPES = {
   certification: 'certification'
 } as const
 
-const GITHUB_TOKEN = process.env.NEXT_PRIVATE_GITHUB_PERSONAL_ACCESS_TOKEN
+const GITHUB_TOKEN = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
 
 function DashboardPage() {
   const router = useRouter()
