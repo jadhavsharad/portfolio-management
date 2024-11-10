@@ -11,3 +11,7 @@ body {
     --radius: 0.5rem;
   }
 }
+
+.recent-activity-card{
+  scrollbar-width: none;
+}
