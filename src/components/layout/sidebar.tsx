@@ -1,11 +1,11 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { HomeIcon, PersonIcon, StarIcon, GearIcon } from '@radix-ui/react-icons'
+import { HomeIcon, PersonIcon, StarIcon, GearIcon, } from '@radix-ui/react-icons'
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { CodeIcon, ChevronRightIcon, SparklesIcon, CircleIcon, HeartIcon, FileIcon, MenuIcon, XIcon } from 'lucide-react'
+import { CodeIcon, ChevronRightIcon, SparklesIcon, CircleIcon, HeartIcon, FileIcon, MenuIcon, XIcon, CloudIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 const menuItems = [
@@ -36,6 +36,13 @@ const menuItems = [
         href: '/certifications',
         gradient: 'from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/10',
         hoverColor: 'hover:text-blue-600 dark:hover:text-blue-400'
+    },
+    {
+        icon: CloudIcon,
+        label: 'Storage',
+        href: '/storage',
+        gradient: 'from-green-100 to-green-50 dark:from-green-900/20 dark:to-green-900/10',
+        hoverColor: 'hover:text-green-600 dark:hover:text-green-400'
     },
 ]
 
