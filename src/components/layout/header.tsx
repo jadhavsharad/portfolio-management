@@ -48,7 +48,7 @@ export function Header() {
     return (
         <header className="border-b p-4">
             <div className="container mx-auto flex justify-between items-center">
-                <h1 className="text-xl font-bold">Portfolio Manager</h1>
+                <h1 className="text-xl font-bold">Welcome!</h1>
 
                 <div className="flex items-center space-x-4">
                     <Button

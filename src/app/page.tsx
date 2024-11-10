@@ -186,7 +186,7 @@ function DashboardPage() {
       <div className="flex flex-wrap flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-3">
           <LayoutDashboardIcon className="h-5 w-5 text-indigo-500" aria-hidden="true" />
-          <h1 className="text-2xl font-medium">Analytics Hub</h1>
+          <h1 className="text-2xl font-medium">Dashboard</h1>
         </div>
         <div className="flex flex-wrap gap-3">
           <a 
