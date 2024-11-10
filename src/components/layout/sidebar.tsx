@@ -8,30 +8,30 @@ import Link from 'next/link'
 import { CodeIcon, ChevronRightIcon, SparklesIcon, CircleIcon, HeartIcon, FileIcon } from 'lucide-react'
 
 const menuItems = [
-    { 
-        icon: HomeIcon, 
-        label: 'Dashboard', 
+    {
+        icon: HomeIcon,
+        label: 'Dashboard',
         href: '/',
         gradient: 'from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20',
         hoverColor: 'hover:text-purple-600 dark:hover:text-purple-400'
     },
-    { 
-        icon: PersonIcon, 
-        label: 'Projects', 
+    {
+        icon: PersonIcon,
+        label: 'Projects',
         href: '/projects',
         gradient: 'from-red-100 to-red-50 dark:from-red-900/20 dark:to-red-900/10',
         hoverColor: 'hover:text-red-600 dark:hover:text-red-400'
     },
-    { 
-        icon: StarIcon, 
-        label: 'Skills', 
+    {
+        icon: StarIcon,
+        label: 'Skills',
         href: '/skills',
         gradient: 'from-teal-100 to-teal-50 dark:from-teal-900/20 dark:to-teal-900/10',
         hoverColor: 'hover:text-teal-600 dark:hover:text-teal-400'
     },
-    { 
-        icon: GearIcon, 
-        label: 'Certifications', 
+    {
+        icon: GearIcon,
+        label: 'Certifications',
         href: '/certifications',
         gradient: 'from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/10',
         hoverColor: 'hover:text-blue-600 dark:hover:text-blue-400'
@@ -45,20 +45,18 @@ export function Sidebar() {
         <div className="w-64 flex-shrink-0">
             <motion.aside
                 initial={false}
-                className="fixed w-64 bg-background/80 backdrop-blur-sm border-r 
-                          min-h-screen p-4"
+                className="fixed w-64 bg-background/80 backdrop-blur-sm border-r  min-h-screen p-4"
                 aria-label="Main Navigation"
             >
                 <div className="h-[50px] flex items-center gap-2 px-2" aria-label="Portfolio Header">
                     <SparklesIcon className="h-4 w-4 text-purple-500" aria-hidden="true" />
-                    <h2 className="text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600 
-                                 bg-clip-text text-transparent">Portfolio</h2>
+                    <h2 className="text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600  bg-clip-text text-transparent">Portfolio Manager</h2>
                 </div>
 
                 <nav className="space-y-1.5 py-4" role="navigation">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.href
-                        
+
                         return (
                             <Link
                                 key={item.href}
@@ -68,7 +66,7 @@ export function Sidebar() {
                                 <motion.div
                                     whileTap={{ scale: 0.98 }}
                                     className={cn(
-                                        "flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors duration-200",
+                                        "flex items-center gap-2.5 px-3 py-2 rounded-full transition-colors duration-200",
                                         "hover:bg-gradient-to-r", item.gradient, item.hoverColor,
                                         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-1",
                                         "group",
@@ -102,10 +100,9 @@ export function Sidebar() {
                 </nav>
 
                 <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/10 
-                                  dark:to-blue-900/10 rounded-md p-3 flex items-center justify-center gap-1.5"
-                         role="contentinfo"
-                         aria-label="Version Information">
+                    <div className="bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/10 dark:to-blue-900/10 rounded-md p-3 flex items-center justify-center gap-1.5"
+                        role="contentinfo"
+                        aria-label="Version Information">
                         <CodeIcon className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
                         <HeartIcon className="h-2.5 w-2.5 text-red-400" aria-hidden="true" />
                         <p className="text-[10px] text-muted-foreground">
