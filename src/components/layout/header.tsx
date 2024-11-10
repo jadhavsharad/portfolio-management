@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export function Header() {
-    const { theme, setTheme } = useTheme()
+    const { theme, setTheme, resolvedTheme } = useTheme()
     const router = useRouter()
     const [mounted, setMounted] = useState(false)
 
@@ -54,9 +54,9 @@ export function Header() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
                     >
-                        {theme === 'dark' ? (
+                        {resolvedTheme === 'dark' ? (
                             <SunIcon className="h-5 w-5" />
                         ) : (
                             <MoonIcon className="h-5 w-5" />
