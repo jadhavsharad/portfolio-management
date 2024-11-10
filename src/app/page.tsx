@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { withAuth } from '@/components/hoc/with-auth'
 import { db } from '@/lib/firebase'
-import { collection, getDocs, query, orderBy, limit, Timestamp, doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { GitHubLogoIcon, VercelLogoIcon } from '@radix-ui/react-icons'
 import { BrainCircuitIcon, CodeIcon, GlobeIcon, LayoutDashboardIcon, GitBranchIcon, PackageIcon, ArrowUpRightIcon, GitCommitIcon, GraduationCapIcon, CodepenIcon, UsersIcon, BookOpenIcon, ClockIcon, FolderPlusIcon } from 'lucide-react'
 import { Octokit } from "@octokit/rest";
