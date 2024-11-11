@@ -66,11 +66,13 @@ export function Sidebar() {
 
     return (
         <>
-            {/* Update mobile menu button positioning */}
+            {/* Mobile menu button */}
             <button 
                 onClick={() => setIsOpen(!isOpen)}
                 className="fixed top-3.5 left-4 z-50 md:hidden bg-background hover:bg-accent p-2 rounded-lg transition-colors"
                 aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
+                aria-controls="sidebar-menu"
             >
                 {isOpen ? 
                     <XIcon className="h-5 w-5" /> : 
@@ -78,11 +80,14 @@ export function Sidebar() {
                 }
             </button>
 
-            <div className={cn(
-                "w-64 flex-shrink-0",
-                !isOpen && "hidden md:block",
-                isMobile && "absolute inset-0 z-40"
-            )}>
+            <div 
+                id="sidebar-menu"
+                className={cn(
+                    "w-64 flex-shrink-0",
+                    !isOpen && "hidden md:block",
+                    isMobile && "absolute inset-0 z-40"
+                )}
+            >
                 <motion.aside
                     initial={false}
                     animate={{ x: isOpen ? 0 : -256 }}
@@ -105,38 +110,31 @@ export function Sidebar() {
                                     href={item.href}
                                     onClick={() => isMobile && setIsOpen(false)}
                                     aria-current={isActive ? 'page' : undefined}
+                                    className={cn(
+                                        "flex items-center gap-2.5 px-3 py-2 rounded-full transition-colors duration-200",
+                                        "hover:bg-gradient-to-r", item.gradient, item.hoverColor,
+                                        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-1",
+                                        "group",
+                                        isActive ? `bg-gradient-to-r ${item.gradient} font-medium` : ""
+                                    )}
+                                    aria-label={`${item.label} ${isActive ? '(current page)' : ''}`}
                                 >
-                                    <motion.div
-                                        whileTap={{ scale: 0.98 }}
-                                        className={cn(
-                                            "flex items-center gap-2.5 px-3 py-2 rounded-full transition-colors duration-200",
-                                            "hover:bg-gradient-to-r", item.gradient, item.hoverColor,
-                                            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-1",
-                                            "group",
-                                            isActive ? `bg-gradient-to-r ${item.gradient} font-medium` : ""
-                                        )}
-                                        role="button"
-                                        tabIndex={0}
-                                        aria-label={`${item.label} ${isActive ? '(current page)' : ''}`}
-                                    >
-                                        <span className="flex items-center gap-2.5" aria-hidden="true">
-                                            <item.icon className={cn(
-                                                "h-3.5 w-3.5 transition-colors",
-                                                isActive && "text-primary"
-                                            )} />
-                                            <FileIcon className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        </span>
-                                        <span className={cn(
-                                            "text-sm flex-grow",
+                                    <span className="flex items-center gap-2.5" aria-hidden="true">
+                                        <item.icon className={cn(
+                                            "h-3.5 w-3.5 transition-colors",
                                             isActive && "text-primary"
-                                        )}>{item.label}</span>
-                                        {isActive && (
-                                            <span className="flex items-center gap-1" aria-hidden="true">
-                                                <CircleIcon className="h-1.5 w-1.5 text-primary" />
-                                                <ChevronRightIcon className="h-3 w-3 text-primary" />
-                                            </span>
-                                        )}
-                                    </motion.div>
+                                        )} />
+                                    </span>
+                                    <span className={cn(
+                                        "text-sm flex-grow",
+                                        isActive && "text-primary"
+                                    )}>{item.label}</span>
+                                    {isActive && (
+                                        <span className="flex items-center gap-1" aria-hidden="true">
+                                            <CircleIcon className="h-1.5 w-1.5 text-primary" />
+                                            <ChevronRightIcon className="h-3 w-3 text-primary" />
+                                        </span>
+                                    )}
                                 </Link>
                             )
                         })}
