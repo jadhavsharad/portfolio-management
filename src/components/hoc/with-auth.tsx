@@ -9,11 +9,11 @@ export const withAuth = (WrappedComponent: React.ComponentType) => {
 
     useEffect(() => {
       if (!loading && !user) {
-        router.push('/login')
+        router.replace('/login')
       }
     }, [user, loading, router])
 
-    if (loading) {
+    if (loading && !user) {
       return <div>Loading...</div>
     }
 

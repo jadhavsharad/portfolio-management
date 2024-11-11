@@ -6,9 +6,10 @@ import { withAuth } from '@/components/hoc/with-auth'
 import { db } from '@/lib/firebase'
 import { doc, getDoc } from 'firebase/firestore'
 import { GitHubLogoIcon, VercelLogoIcon } from '@radix-ui/react-icons'
-import { BrainCircuitIcon, CodeIcon, GlobeIcon, LayoutDashboardIcon, GitBranchIcon, PackageIcon, ArrowUpRightIcon, GitCommitIcon, GraduationCapIcon, CodepenIcon, UsersIcon, BookOpenIcon, ClockIcon, FolderPlusIcon } from 'lucide-react'
+import { BrainCircuitIcon, CodeIcon, GlobeIcon, LayoutDashboardIcon, GitBranchIcon, PackageIcon, ArrowUpRightIcon, GitCommitIcon, GraduationCapIcon, CodepenIcon, UsersIcon, BookOpenIcon, ClockIcon, FolderPlusIcon, UploadIcon } from 'lucide-react'
 import { Octokit } from "@octokit/rest";
 import { useRouter } from 'next/navigation'
+import axios from 'axios';
 
 // Constants
 const LINKS = {
@@ -33,6 +34,14 @@ const ACTIVITY_TYPES = {
 } as const
 
 const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_PERSONAL_ACCESS_TOKEN
+
+// Add this interface
+interface BlobFile {
+    url: string;
+    pathname: string;
+    size: number;
+    uploadedAt: string;
+}
 
 function DashboardPage() {
   const router = useRouter()
@@ -94,6 +103,15 @@ function DashboardPage() {
           description: commit.commit.message,
           timestamp: new Date(commit.commit.author?.date || new Date()),
           timeAgo: getTimeAgo(new Date(commit.commit.author?.date || new Date()))
+        }))
+
+        const { data: storageData } = await axios.get('/api/blob')
+        const storageActivities = (storageData.files as BlobFile[]).map(file => ({
+          type: 'storage',
+          title: 'File Upload',
+          description: `Uploaded ${file.pathname.split('/').pop()}`,
+          timestamp: new Date(file.uploadedAt),
+          timeAgo: getTimeAgo(new Date(file.uploadedAt))
         }))
 
         const projectsDoc = await getDoc(doc(db, 'projects', 'NjUmAfebfBPHfXZ4CVnW'))
@@ -162,6 +180,7 @@ function DashboardPage() {
 
         const allActivities = [
           ...githubActivities,
+          ...storageActivities,
           ...projectActivities,
           ...skillActivities,
           ...certificationActivities
@@ -326,12 +345,14 @@ function DashboardPage() {
                     activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' :
                     activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' :
                     activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : 
+                    activity.type === 'storage' ? 'bg-indigo-100 dark:bg-indigo-950/40' : 
                     'bg-purple-100 dark:bg-purple-950/40'} flex items-center justify-center`}>
                     {activity.type === ACTIVITY_TYPES.commit && <GitCommitIcon className="h-4 w-4 text-green-600 dark:text-green-300" />}
                     {activity.type === ACTIVITY_TYPES.project && <PackageIcon className="h-4 w-4 text-blue-600 dark:text-blue-300" />}
                     {activity.type === ACTIVITY_TYPES.skill && <CodeIcon className="h-4 w-4 text-orange-600 dark:text-orange-300" />}
                     {activity.type === ACTIVITY_TYPES.category && <FolderPlusIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-300" />}
                     {activity.type === ACTIVITY_TYPES.certification && <GraduationCapIcon className="h-4 w-4 text-purple-600 dark:text-purple-300" />}
+                    {activity.type === 'storage' && <UploadIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />}
                   </div>
                   <div>
                     <h3 className="text-sm font-medium">{activity.title}</h3>
