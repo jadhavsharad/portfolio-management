@@ -387,7 +387,7 @@ function DashboardPage() {
         </motion.div>
 
         {/* Recent Portfolio Updates Section */}
-        <motion.div className="p-6 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 lg:max-h-[50svh] overflow-y-auto">
+        <motion.div className="p-6 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 lg:max-h-[50svh] overflow-y-auto recent-activity-card">
           {/* Updates Header */}
           <div className="flex items-center gap-3 mb-4">
             <GitBranchIcon className="h-5 w-5 text-green-500" aria-hidden="true" />
