@@ -6,56 +6,65 @@ import { withAuth } from '@/components/hoc/with-auth'
 import { db } from '@/lib/firebase'
 import { doc, getDoc } from 'firebase/firestore'
 import { GitHubLogoIcon, VercelLogoIcon } from '@radix-ui/react-icons'
-import { BrainCircuitIcon, CodeIcon, GlobeIcon, LayoutDashboardIcon, GitBranchIcon, PackageIcon, ArrowUpRightIcon, GitCommitIcon, GraduationCapIcon, CodepenIcon, UsersIcon, BookOpenIcon, ClockIcon, FolderPlusIcon, UploadIcon } from 'lucide-react'
+import { BrainCircuitIcon, CodeIcon, GlobeIcon, LayoutDashboardIcon, GitBranchIcon, PackageIcon, ArrowUpRightIcon, GitCommitIcon, GraduationCapIcon, CodepenIcon, UsersIcon, BookOpenIcon, ClockIcon, FolderPlusIcon, UploadIcon, ActivityIcon } from 'lucide-react'
 import { Octokit } from "@octokit/rest";
 import { useRouter } from 'next/navigation'
 import axios from 'axios';
 
-// Constants
+// Constants for external links and configuration
 const LINKS = {
   portfolio: 'https://sharadjadhavportfolio.vercel.app',
   github: 'https://github.com/jadhavsharad',
   vercel: 'https://vercel.com/jadhavsharad'
 } as const
 
+// Color scheme configuration for UI elements
 const COLORS = {
-  primary: '#FF6B6B',
-  secondary: '#4ECDC4', 
-  tertiary: '#45B7D1',
-  chart: ['#F43F5E', '#3B82F6', '#8B5CF6']
+  primary: '#FF6B6B',    // Main brand color
+  secondary: '#4ECDC4',  // Supporting color
+  tertiary: '#45B7D1',   // Additional accent
+  chart: ['#F43F5E', '#3B82F6', '#8B5CF6'] // Colors for data visualization
 } as const
 
+// Activity type constants for categorizing different events
 const ACTIVITY_TYPES = {
   commit: 'commit',
-  project: 'project',
+  project: 'project', 
   skill: 'skill',
   category: 'category',
   certification: 'certification'
 } as const
 
+// GitHub authentication token from environment variables
 const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_PERSONAL_ACCESS_TOKEN
 
-// Add this interface
+// Interface for blob storage file metadata
 interface BlobFile {
-    url: string;
-    pathname: string;
-    size: number;
-    uploadedAt: string;
+    url: string;        // File access URL
+    pathname: string;   // File path in storage
+    size: number;       // File size in bytes
+    uploadedAt: string; // Upload timestamp
 }
 
 function DashboardPage() {
   const router = useRouter()
+  
+  // State for tracking overall statistics
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalSkills: 0,
     totalCertifications: 0
   })
+  
+  // State for recent activity feed
   const [recentActivities, setRecentActivities] = useState<any[]>([])
 
+  // Handler for navigation between pages
   const handleNavigation = (path: string) => {
     router.push(path)
   }
 
+  // Utility function to format timestamps into relative time
   const getTimeAgo = (date: Date) => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
     
@@ -74,6 +83,7 @@ function DashboardPage() {
   }
 
   useEffect(() => {
+    // Fetch overall statistics from Firestore
     const fetchStats = async () => {
       try {
         const projectsDoc = await getDoc(doc(db, 'projects', 'NjUmAfebfBPHfXZ4CVnW'))
@@ -90,21 +100,27 @@ function DashboardPage() {
       }
     }
 
+    // Fetch and combine activities from multiple sources
     const fetchGithubActivity = async () => {
       try {
+        // Fetch GitHub commits
         const octokit = new Octokit({ auth: GITHUB_TOKEN })
         const { data: commits } = await octokit.repos.listCommits({
           owner: 'jadhavsharad',
           repo: 'Portfolio-v2'
         })
+        
+        // Transform commit data into activity format
         const githubActivities = commits.map(commit => ({
           type: ACTIVITY_TYPES.commit,
           title: 'Commit',
           description: commit.commit.message,
           timestamp: new Date(commit.commit.author?.date || new Date()),
-          timeAgo: getTimeAgo(new Date(commit.commit.author?.date || new Date()))
+          timeAgo: getTimeAgo(new Date(commit.commit.author?.date || new Date())),
+          url: commit.html_url // Direct link to commit on GitHub
         }))
 
+        // Fetch storage activity
         const { data: storageData } = await axios.get('/api/blob')
         const storageActivities = (storageData.files as BlobFile[]).map(file => ({
           type: 'storage',
@@ -114,10 +130,12 @@ function DashboardPage() {
           timeAgo: getTimeAgo(new Date(file.uploadedAt))
         }))
 
+        // Fetch Firestore documents
         const projectsDoc = await getDoc(doc(db, 'projects', 'NjUmAfebfBPHfXZ4CVnW'))
         const skillsDoc = await getDoc(doc(db, 'skills', 'MFY6937UnRyIoPp8Ehfg'))
         const certificationsDoc = await getDoc(doc(db, 'certifications', 'rx2fFCF5UgZxRvH9FfiN'))
 
+        // Process project activities
         const projectActivities: any[] = []
         const projects = projectsDoc.data()?.projects || []
         projects.forEach((project: any) => {
@@ -141,6 +159,7 @@ function DashboardPage() {
           }
         })
 
+        // Process skill and category activities
         const skillActivities: any[] = []
         const categories = skillsDoc.data()?.categories || []
         
@@ -170,6 +189,7 @@ function DashboardPage() {
           }
         })
 
+        // Process certification activities
         const certificationActivities = certificationsDoc.data()?.certifications?.map((cert: any) => ({
           type: ACTIVITY_TYPES.certification,
           title: cert.name,
@@ -178,6 +198,7 @@ function DashboardPage() {
           timeAgo: getTimeAgo(new Date(cert.updatedAt || cert.date?.seconds * 1000))
         })) || []
 
+        // Combine and sort all activities by timestamp
         const allActivities = [
           ...githubActivities,
           ...storageActivities,
@@ -186,12 +207,14 @@ function DashboardPage() {
           ...certificationActivities
         ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
         
+        // Update state with most recent 10 activities
         setRecentActivities(allActivities.slice(0, 10))
       } catch (error) {
         console.error('Error fetching activities:', error)
       }
     }
 
+    // Initialize data fetching
     fetchStats()
     fetchGithubActivity()
   }, [])
@@ -316,18 +339,21 @@ function DashboardPage() {
           </div>
         </motion.div>
       </div>
+      {/* Grid container for activity and updates sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <motion.div 
-          className="recent-activity-card p-6 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 lg:max-h-[50svh] overflow-y-auto"
-        >
+        {/* Portfolio Activity Section */}
+        <motion.div className="recent-activity-card p-6 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 lg:max-h-[50svh] overflow-y-auto">
+          {/* Activity Header */}
           <div className="flex items-center gap-3 mb-4">
-            <GitBranchIcon className="h-5 w-5 text-blue-500" aria-hidden="true" />
-            <h2 className="text-lg font-medium">Recent Activity</h2>
+            <ActivityIcon className="h-5 w-5 text-blue-500" aria-hidden="true" />
+            <h2 className="text-lg font-medium">Portfolio Activity</h2>
           </div>
 
+          {/* Activity List */}
           <div className="space-y-4">
-            {recentActivities.map((activity, index) => {
-              const isClickable = activity.type !== ACTIVITY_TYPES.commit;
+            {/* Filter out commit activities and map remaining activities */}
+            {recentActivities.filter(activity => activity.type !== ACTIVITY_TYPES.commit).map((activity, index) => {
+              // Determine navigation path based on activity type
               const getPath = () => {
                 switch(activity.type) {
                   case ACTIVITY_TYPES.project: return '/projects';
@@ -339,21 +365,16 @@ function DashboardPage() {
               };
 
               return (
-                <div key={index} onClick={() => isClickable && handleNavigation(getPath())}
-                  className={`flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 ${isClickable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800' : ''}`}>
-                  <div className={`h-8 w-8 rounded-full ${activity.type === ACTIVITY_TYPES.commit ? 'bg-green-100 dark:bg-green-950/40' : 
-                    activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' :
-                    activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' :
-                    activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : 
-                    activity.type === 'storage' ? 'bg-indigo-100 dark:bg-indigo-950/40' : 
-                    'bg-purple-100 dark:bg-purple-950/40'} flex items-center justify-center`}>
-                    {activity.type === ACTIVITY_TYPES.commit && <GitCommitIcon className="h-4 w-4 text-green-600 dark:text-green-300" />}
+                <div key={index} onClick={() => handleNavigation(getPath())} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                  {/* Activity Icon Container */}
+                  <div className={`h-8 w-8 rounded-full ${activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' : activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' : activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : 'bg-purple-100 dark:bg-purple-950/40'} flex items-center justify-center`}>
+                    {/* Render appropriate icon based on activity type */}
                     {activity.type === ACTIVITY_TYPES.project && <PackageIcon className="h-4 w-4 text-blue-600 dark:text-blue-300" />}
                     {activity.type === ACTIVITY_TYPES.skill && <CodeIcon className="h-4 w-4 text-orange-600 dark:text-orange-300" />}
                     {activity.type === ACTIVITY_TYPES.category && <FolderPlusIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-300" />}
                     {activity.type === ACTIVITY_TYPES.certification && <GraduationCapIcon className="h-4 w-4 text-purple-600 dark:text-purple-300" />}
-                    {activity.type === 'storage' && <UploadIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />}
                   </div>
+                  {/* Activity Details */}
                   <div>
                     <h3 className="text-sm font-medium">{activity.title}</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
@@ -365,48 +386,39 @@ function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Time Tracking */}
-        <motion.div 
-          className="p-6 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800"
-        >
+        {/* Recent Portfolio Updates Section */}
+        <motion.div className="p-6 rounded-2xl bg-white dark:bg-gray-950 border border-gray-100 dark:border-gray-800 lg:max-h-[50svh] overflow-y-auto">
+          {/* Updates Header */}
           <div className="flex items-center gap-3 mb-4">
-            <ClockIcon className="h-5 w-5 text-orange-500" aria-hidden="true" />
-            <h2 className="text-lg font-medium">Time Tracking</h2>
+            <GitBranchIcon className="h-5 w-5 text-green-500" aria-hidden="true" />
+            <h2 className="text-lg font-medium">Recent Portfolio Updates</h2>
           </div>
-
+          {/* Updates List */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
-              <div className="h-8 w-8 rounded-full bg-orange-100 dark:bg-orange-950/40 flex items-center justify-center">
-                <CodeIcon className="h-4 w-4 text-orange-600 dark:text-orange-300" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium">Coding Time</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">6 hours today</p>
-              </div>
-              <span className="ml-auto text-xs text-gray-400">↑ 12%</span>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
-              <div className="h-8 w-8 rounded-full bg-teal-100 dark:bg-teal-950/40 flex items-center justify-center">
-                <BookOpenIcon className="h-4 w-4 text-teal-600 dark:text-teal-300" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium">Learning</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">2 hours today</p>
-              </div>
-              <span className="ml-auto text-xs text-gray-400">↑ 8%</span>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900">
-              <div className="h-8 w-8 rounded-full bg-pink-100 dark:bg-pink-950/40 flex items-center justify-center">
-                <UsersIcon className="h-4 w-4 text-pink-600 dark:text-pink-300" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium">Meetings</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">1.5 hours today</p>
-              </div>
-              <span className="ml-auto text-xs text-gray-400">↓ 5%</span>
-            </div>
+            {/* Filter and display only commit activities */}
+            {recentActivities
+              .filter(activity => activity.type === ACTIVITY_TYPES.commit)
+              .map((commit, index) => (
+                <a
+                  key={index}
+                  href={commit.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none active:outline active:outline-2 active:outline-green-500"
+                  aria-label={`View commit: ${commit.description}`}
+                >
+                  {/* Commit Icon */}
+                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 dark:bg-green-950/40 flex items-center justify-center" aria-hidden="true">
+                    <GitCommitIcon className="h-4 w-4 text-green-600 dark:text-green-300" />
+                  </div>
+                  {/* Commit Details */}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-medium truncate">{commit.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{commit.description}</p>
+                  </div>
+                  <span className="flex-shrink-0 text-xs text-gray-400">{commit.timeAgo}</span>
+                </a>
+              ))}
           </div>
         </motion.div>
       </div>
