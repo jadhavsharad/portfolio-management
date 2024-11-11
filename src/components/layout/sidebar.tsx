@@ -92,7 +92,7 @@ export function Sidebar() {
                     initial={false}
                     animate={{ x: isOpen ? 0 : -256 }}
                     transition={{ duration: 0.2 }}
-                    className="fixed w-64 bg-zinc-50 dark:bg-zinc-950 border-r min-h-screen p-4"
+                    className="fixed w-64 bg-zinc-50 dark:bg-zinc-950 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4"
                     aria-label="Main Navigation"
                 >
                     <div className="h-[50px] flex items-center gap-2 px-2" aria-label="Portfolio Header">
