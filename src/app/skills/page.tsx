@@ -313,7 +313,7 @@ function SkillsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 {/* Key Skills Management */}
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
                     <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
@@ -321,20 +321,20 @@ function SkillsPage() {
                     </h2>
                     <div className="space-y-3 sm:space-y-4">
                         <div className="flex items-center gap-2">
-                            <TextIcon className="h-4 w-4" />
+                            <TextIcon className="h-4 w-4 flex-shrink-0" />
                             <Input placeholder="Skill name" value={newKeySkill.name} 
                                 onChange={(e) => setNewKeySkill({ ...newKeySkill, name: e.target.value })} 
-                                disabled={isLoading} className="text-sm sm:text-base" />
+                                disabled={isLoading} className="text-sm sm:text-base w-full" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <ImageIcon className="h-4 w-4" />
+                            <ImageIcon className="h-4 w-4 flex-shrink-0" />
                             <Input placeholder="Icon URL" value={newKeySkill.imageUrl} 
                                 onChange={(e) => setNewKeySkill({ ...newKeySkill, imageUrl: e.target.value })} 
-                                disabled={isLoading} className="text-sm sm:text-base" />
+                                disabled={isLoading} className="text-sm sm:text-base w-full" />
                         </div>
                         <Button onClick={addKeySkill} disabled={isLoading} 
-                            className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm sm:text-base py-2 sm:py-3">
-                            <PlusIcon className="h-4 w-4 mr-2" />Add Key Skill
+                            className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm sm:text-base py-2">
+                            <PlusIcon className="h-4 w-4 mr-2 flex-shrink-0" />Add Key Skill
                         </Button>
                     </div>
                 </div>
@@ -344,12 +344,12 @@ function SkillsPage() {
                     <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
                         <FolderIcon className="h-4 sm:h-5 w-4 sm:w-5 text-blue-500" />Category Management
                     </h2>
-                    <div className="flex gap-2 sm:gap-3">
+                    <div className="flex gap-2">
                         <Input placeholder="Category name" value={newCategory} 
                             onChange={(e) => setNewCategory(e.target.value)} 
-                            disabled={isLoading} className="text-sm sm:text-base" />
-                        <Button onClick={addCategory} disabled={isLoading} className="text-sm sm:text-base">
-                            <PlusIcon className="h-4 w-4 mr-2" />Add
+                            disabled={isLoading} className="text-sm sm:text-base flex-1" />
+                        <Button onClick={addCategory} disabled={isLoading} className="text-sm sm:text-base whitespace-nowrap">
+                            <PlusIcon className="h-4 w-4 mr-2 flex-shrink-0" />Add
                         </Button>
                     </div>
                 </div>
@@ -359,9 +359,9 @@ function SkillsPage() {
                     <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
                         <CodeIcon className="h-4 sm:h-5 w-4 sm:w-5 text-purple-500" />Add New Skill
                     </h2>
-                    <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-3">
                         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                            <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base">
+                            <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base w-full">
                                 <SelectValue placeholder={categories.length === 0 ? "No categories available" : "Choose category"} />
                             </SelectTrigger>
                             <SelectContent>
@@ -373,25 +373,25 @@ function SkillsPage() {
                                 }
                             </SelectContent>
                         </Select>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
-                                <TextIcon className="h-4 w-4" />
+                                <TextIcon className="h-4 w-4 flex-shrink-0" />
                                 <Input placeholder="Skill name" value={newSkill.name} 
                                     onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} 
                                     disabled={!selectedCategory || isLoading} 
-                                    className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" />
+                                    className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base w-full" />
                             </div>
                             <div className="flex items-center gap-2">
-                                <ImageIcon className="h-4 w-4" />
+                                <ImageIcon className="h-4 w-4 flex-shrink-0" />
                                 <Input placeholder="Icon URL" value={newSkill.imageUrl || ''} 
                                     onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} 
                                     disabled={!selectedCategory || isLoading} 
-                                    className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" />
+                                    className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base w-full" />
                             </div>
                         </div>
-                        <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-3 sm:p-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                                <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-3">
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2">
                                     <Switch checked={showProficiency} onCheckedChange={setShowProficiency} id="show-proficiency" />
                                     <label htmlFor="show-proficiency" className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                                         Include proficiency
@@ -399,19 +399,24 @@ function SkillsPage() {
                                 </div>
                                 {showProficiency && (
                                     <div className="flex items-center gap-2">
-                                        <BarChartIcon className="h-4 w-4" />
-                                        <Input type="number" min="0" max="100" placeholder="Level (0-100)" 
+                                        <BarChartIcon className="h-4 w-4 flex-shrink-0" />
+                                        <Input 
+                                            type="number" 
+                                            min="0" 
+                                            max="100" 
+                                            placeholder="Level (0-100)" 
                                             value={newSkill.level || ''} 
                                             onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} 
-                                            className="w-24 sm:w-32 bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" 
-                                            disabled={!selectedCategory || isLoading} />
+                                            className="max-w-[120px] bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" 
+                                            disabled={!selectedCategory || isLoading} 
+                                        />
                                     </div>
                                 )}
                             </div>
                         </div>
                         <Button onClick={addSkill} disabled={!selectedCategory || isLoading} 
-                            className="w-full bg-purple-500 hover:bg-purple-600 text-white transition-all duration-200 text-sm sm:text-base py-2 sm:py-3">
-                            <PlusIcon className="h-4 w-4 mr-2" />Add Skill
+                            className="w-full bg-purple-500 hover:bg-purple-600 text-white transition-all duration-200 text-sm sm:text-base py-2">
+                            <PlusIcon className="h-4 w-4 mr-2 flex-shrink-0" />Add Skill
                         </Button>
                     </div>
                 </div>
