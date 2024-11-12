@@ -5,7 +5,7 @@ import { HomeIcon, PersonIcon, StarIcon, GearIcon, } from '@radix-ui/react-icons
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { CodeIcon, ChevronRightIcon, SparklesIcon, CircleIcon, HeartIcon, FileIcon, MenuIcon, XIcon, CloudIcon } from 'lucide-react'
+import { CodeIcon, ChevronRightIcon, SparklesIcon, CircleIcon, HeartIcon, FileIcon, MenuIcon, XIcon, CloudIcon, CalendarIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 const menuItems = [
@@ -43,6 +43,13 @@ const menuItems = [
         href: '/storage',
         gradient: 'from-green-100 to-green-50 dark:from-green-900/20 dark:to-green-900/10',
         hoverColor: 'hover:text-green-600 dark:hover:text-green-400'
+    },
+    {
+        icon: CalendarIcon,
+        label: 'Timeline',
+        href: '/timeline',
+        gradient: 'from-orange-100 to-orange-50 dark:from-orange-900/20 dark:to-orange-900/10',
+        hoverColor: 'hover:text-orange-600 dark:hover:text-orange-400'
     },
 ]
 
