@@ -14,6 +14,9 @@ import { useToast } from '@/hooks/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 
 interface TimelineEvent {
     year: number
@@ -218,15 +221,35 @@ function TimelinePage() {
                     </h2>
                     <div className="grid gap-4" role="form" aria-label="Add new event form">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Input
-                                type="number"
-                                placeholder="Year"
-                                value={newEvent.year || ''}
-                                onChange={(e) => setNewEvent({ ...newEvent, year: parseInt(e.target.value) })}
+                            <Select
+                                value={newEvent.year?.toString()}
+                                onValueChange={(value) => 
+                                    setNewEvent({ ...newEvent, year: parseInt(value) })
+                                }
                                 disabled={isLoading}
-                                aria-label="Event year"
-                                required
-                            />
+                            >
+                                <SelectTrigger className="w-full">
+                                    <div className="flex items-center">
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        <SelectValue placeholder="Select year">
+                                            {newEvent.year ? newEvent.year : "Select year"}
+                                        </SelectValue>
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {(() => {
+                                        const currentYear = new Date().getFullYear();
+                                        return Array.from({ length: 50 }, (_, i) => {
+                                            const year = currentYear - i;
+                                            return (
+                                                <SelectItem key={year} value={year.toString()}>
+                                                    {year}
+                                                </SelectItem>
+                                            );
+                                        });
+                                    })()}
+                                </SelectContent>
+                            </Select>
                             <Input
                                 placeholder="Title"
                                 value={newEvent.title}
