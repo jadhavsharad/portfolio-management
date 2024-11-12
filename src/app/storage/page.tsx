@@ -12,7 +12,7 @@ import {
     ReloadIcon,
 } from '@radix-ui/react-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { RefreshCwIcon, VideoIcon, DatabaseIcon, Trash2Icon, Share2Icon, InboxIcon, UploadCloudIcon, PencilIcon, HashIcon, CheckIcon, XIcon, ClipboardCopyIcon, AlertOctagonIcon, FolderIcon, InfoIcon, TableIcon, FileEditIcon, PackageIcon, HardDriveIcon, ClockIcon, ImageIcon } from 'lucide-react';
+import { RefreshCwIcon, VideoIcon, DatabaseIcon, Trash2Icon, Share2Icon, InboxIcon, UploadCloudIcon, HardDriveIcon, ClockIcon, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Type definition for file metadata
@@ -37,6 +37,8 @@ export default function StoragePage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [addSuffix, setAddSuffix] = useState(true);
     const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+    const [uploadedFileUrl, setUploadedFileUrl] = useState<string>('');
+    const [showUploadedDialog, setShowUploadedDialog] = useState(false);
 
     // Fetch files from API
     const fetchFiles = async () => {
@@ -53,7 +55,6 @@ export default function StoragePage() {
 
     useEffect(() => {
         fetchFiles();
-        
     }, []);
 
     // Handle file selection
@@ -72,9 +73,11 @@ export default function StoragePage() {
     };
 
     // Handle file upload
-    const handleUpload = async () => {
+    const handleUpload = async (e?: React.FormEvent) => {
+        e?.preventDefault(); // Prevent form submission
         if (!fileToUpload) return;
 
+        setShowUploadDialog(false); // Close dialog but continue upload
         setUploading(true);
         setUploadProgress(0);
         
@@ -82,6 +85,10 @@ export default function StoragePage() {
         formData.append('file', fileToUpload);
         formData.append('customFileName', customFileName || fileToUpload.name);
         formData.append('addSuffix', addSuffix.toString());
+
+        const toastId = toast.loading('Uploading file...', {
+            duration: Infinity // Keep toast until upload completes
+        });
 
         try {
             const response = await axios.post('/api/blob', formData, {
@@ -95,16 +102,13 @@ export default function StoragePage() {
             
             setCustomFileName('');
             setFileToUpload(null);
-            setShowUploadDialog(false);
             fetchFiles();
-            toast.success('File uploaded successfully', {
-                description: (
-                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono break-all">
-                        {response.data.url}
-                    </div>
-                )
-            });
+            setUploadedFileUrl(response.data.url);
+            setShowUploadedDialog(true);
+            toast.dismiss(toastId);
+            toast.success('File uploaded successfully');
         } catch (error) {
+            toast.dismiss(toastId);
             toast.error('Upload failed. Please try again.');
         } finally {
             setUploading(false);
@@ -124,11 +128,18 @@ export default function StoragePage() {
         }
     };
 
+    // Handle keyboard events
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleUpload();
+        }
+    };
+
     // Upload progress indicator
     const renderUploadProgress = () => {
         if (!uploading) return null;
         return (
-            <div className="fixed bottom-4 right-4 bg-background/80 backdrop-blur-sm border rounded-lg p-3 shadow-lg">
+            <div className="fixed bottom-4 right-4 bg-background/80 backdrop-blur-sm border rounded-lg p-3 shadow-lg z-50">
                 <div className="space-y-1.5">
                     <div className="text-xs font-medium">Uploading...</div>
                     <div className="w-[180px] h-1.5 bg-secondary rounded-full overflow-hidden">
@@ -142,6 +153,7 @@ export default function StoragePage() {
             </div>
         );
     };
+
     return (
         <div className="container max-w-7xl mx-auto p-4 sm:p-6">
             {/* Header section */}
@@ -172,6 +184,7 @@ export default function StoragePage() {
                             className="hidden"
                             id="file-upload"
                             disabled={uploading}
+                            aria-label="Upload file"
                         />
                         <label htmlFor="file-upload">
                             <Button
@@ -275,7 +288,7 @@ export default function StoragePage() {
                                             className="h-7 w-7 p-0"
                                             asChild
                                         >
-                                            <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                            <a href={file.url} target="_blank" rel="noopener noreferrer" aria-label="Download file">
                                                 <DownloadIcon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                                             </a>
                                         </Button>
@@ -287,6 +300,7 @@ export default function StoragePage() {
                                                 setSelectedFile(file);
                                                 setShowShareDialog(true);
                                             }}
+                                            aria-label="Share file"
                                         >
                                             <Share2Icon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                                         </Button>
@@ -298,6 +312,7 @@ export default function StoragePage() {
                                                 setSelectedFile(file);
                                                 setShowDeleteDialog(true);
                                             }}
+                                            aria-label="Delete file"
                                         >
                                             <Trash2Icon className="h-4 w-4 text-red-500" />
                                         </Button>
@@ -327,43 +342,47 @@ export default function StoragePage() {
             {/* Dialogs */}
             <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
                 <DialogContent className="sm:max-w-md mx-4">
-                    <DialogHeader>
-                        <DialogTitle>Upload File</DialogTitle>
-                        <DialogDescription>
-                            Configure your file upload settings
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Selected File</label>
-                            <p className="text-sm text-gray-500 break-all">{fileToUpload?.name}</p>
+                    <form onSubmit={handleUpload}>
+                        <DialogHeader>
+                            <DialogTitle>Upload File</DialogTitle>
+                            <DialogDescription>
+                                Configure your file upload settings
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Selected File</label>
+                                <p className="text-sm text-gray-500 break-all">{fileToUpload?.name}</p>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium" htmlFor="customFileName">Custom Filename</label>
+                                <Input
+                                    id="customFileName"
+                                    placeholder="Enter custom filename"
+                                    value={customFileName}
+                                    onChange={(e) => setCustomFileName(e.target.value)}
+                                    onKeyDown={handleKeyPress}
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="addSuffix"
+                                    checked={addSuffix}
+                                    onChange={(e) => setAddSuffix(e.target.checked)}
+                                />
+                                <label htmlFor="addSuffix" className="text-sm">
+                                    Add random suffix to filename
+                                </label>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Custom Filename</label>
-                            <Input
-                                placeholder="Enter custom filename"
-                                value={customFileName}
-                                onChange={(e) => setCustomFileName(e.target.value)}
-                            />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="addSuffix"
-                                checked={addSuffix}
-                                onChange={(e) => setAddSuffix(e.target.checked)}
-                            />
-                            <label htmlFor="addSuffix" className="text-sm">
-                                Add random suffix to filename
-                            </label>
-                        </div>
-                    </div>
-                    <DialogFooter className="flex-col sm:flex-row gap-2">
-                        <Button variant="outline" onClick={() => setShowUploadDialog(false)}>Cancel</Button>
-                        <Button onClick={handleUpload} disabled={uploading}>
-                            {uploading ? 'Uploading...' : 'Upload'}
-                        </Button>
-                    </DialogFooter>
+                        <DialogFooter className="flex-col sm:flex-row gap-2">
+                            <Button type="button" variant="outline" onClick={() => setShowUploadDialog(false)}>Cancel</Button>
+                            <Button type="submit" disabled={uploading}>
+                                {uploading ? 'Uploading...' : 'Upload'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
 
@@ -414,6 +433,35 @@ export default function StoragePage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <Dialog open={showUploadedDialog} onOpenChange={setShowUploadedDialog}>
+                <DialogContent className="sm:max-w-md mx-4">
+                    <DialogHeader>
+                        <DialogTitle>File Uploaded Successfully</DialogTitle>
+                        <DialogDescription>
+                            Your file has been uploaded. Here's the shareable link:
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <Input
+                            readOnly
+                            value={uploadedFileUrl}
+                            onClick={(e) => e.currentTarget.select()}
+                            className="flex-1"
+                        />
+                        <Button
+                            onClick={() => {
+                                navigator.clipboard.writeText(uploadedFileUrl);
+                                toast.success('URL copied to clipboard');
+                            }}
+                            variant="outline"
+                        >
+                            Copy
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {renderUploadProgress()}
         </div>
     );

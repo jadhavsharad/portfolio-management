@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -41,6 +41,17 @@ interface EditSkillDialogProps {
     onClose: () => void
     onSave: (categoryName: string, oldSkillName: string, updatedSkill: Skill) => void
 }
+
+// Array of badge colors for random selection
+const BADGE_COLORS = [
+    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300', 
+    'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+    'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+    'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300'
+]
+
 function SkillsPage() {
     const [categories, setCategories] = useState<Category[]>([])
     const [keySkills, setKeySkills] = useState<KeySkill[]>([])
@@ -55,6 +66,11 @@ function SkillsPage() {
 
     const skillsRef = doc(db, 'skills', 'MFY6937UnRyIoPp8Ehfg')
     const keySkillsRef = doc(db, 'skills', '4rdxBjE7SqTpaexjYUw1')
+
+    // Memoized function to get random badge color
+    const getRandomBadgeColor = useCallback(() => {
+        return BADGE_COLORS[Math.floor(Math.random() * BADGE_COLORS.length)]
+    }, [])
 
     useEffect(() => {
         fetchSkills()
@@ -281,7 +297,7 @@ function SkillsPage() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Key Skills</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{keySkills.length}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{keySkills?.length || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -293,7 +309,7 @@ function SkillsPage() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Categories</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{categories.length}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{categories?.length || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -306,7 +322,7 @@ function SkillsPage() {
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Total Skills</p>
                             <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                                {categories.reduce((acc, cat) => acc + cat.skills.length, 0)}
+                                {categories?.reduce((acc, cat) => acc + (cat.skills?.length || 0), 0) || 0}
                             </p>
                         </div>
                     </div>
@@ -336,6 +352,25 @@ function SkillsPage() {
                             className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm sm:text-base py-2">
                             <PlusIcon className="h-4 w-4 mr-2 flex-shrink-0" />Add Key Skill
                         </Button>
+                        
+                        {/* Display Key Skills */}
+                        <div className="mt-4 space-y-2">
+                            {keySkills?.map((skill) => (
+                                <div key={skill.name} className="relative group w-fit">
+                                    <div className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full ${getRandomBadgeColor()}`}>
+                                        {skill.imageUrl && (
+                                            <img src={skill.imageUrl} alt={skill.name} className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 rounded-sm" 
+                                                onError={(e) => e.currentTarget.style.display = 'none'} />
+                                        )}
+                                        <span className="text-xs lg:text-sm font-medium">{skill.name}</span>
+                                        <Cross2Icon 
+                                            className="h-2.5 w-2.5 lg:h-3 lg:w-3 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-gray-600 hover:text-red-500" 
+                                            onClick={() => removeKeySkill(skill)}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
