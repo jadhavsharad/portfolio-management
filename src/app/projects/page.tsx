@@ -369,60 +369,42 @@ function ProjectsPage() {
             <div className="mb-6 sm:mb-8">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 rounded-2xl border dark:border-gray-700 shadow-sm">
                     <div className="space-y-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <GearIcon className="h-6 w-6" /> Projects Manager
-                        </h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2">
-                            <InfoIcon className="h-4 w-4" /> Manage your portfolio projects and showcase your work.
-                        </p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><GearIcon className="h-6 w-6" /> Projects Manager</h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2"><InfoIcon className="h-4 w-4" /> Manage your portfolio projects and showcase your work.</p>
                     </div>
                 </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                            <StarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-emerald-600 dark:text-emerald-400" />
-                        </div>
+                        <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg"><StarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-emerald-600 dark:text-emerald-400" /></div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                                {projects.filter(p => p.isCompleted).length}
-                            </p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{projects.filter(p => p.isCompleted).length}</p>
                         </div>
                     </div>
                 </div>
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-rose-100 dark:bg-rose-900/30 rounded-lg">
-                            <SparklesIcon className="h-5 sm:h-6 w-5 sm:w-6 text-rose-600 dark:text-rose-400" />
-                        </div>
+                        <div className="p-3 bg-rose-100 dark:bg-rose-900/30 rounded-lg"><SparklesIcon className="h-5 sm:h-6 w-5 sm:w-6 text-rose-600 dark:text-rose-400" /></div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Upcoming</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                                {projects.filter(p => !p.isCompleted).length}
-                            </p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{projects.filter(p => !p.isCompleted).length}</p>
                         </div>
                     </div>
                 </div>
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
-                            <FolderIcon className="h-5 sm:h-6 w-5 sm:w-6 text-violet-600 dark:text-violet-400" />
-                        </div>
+                        <div className="p-3 bg-violet-100 dark:bg-violet-900/30 rounded-lg"><FolderIcon className="h-5 sm:h-6 w-5 sm:w-6 text-violet-600 dark:text-violet-400" /></div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Total Projects</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                                {projects.length}
-                            </p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{projects.length}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Create Project Form */}
             <Card className="border-none bg-gradient-to-r from-white/30 to-teal-50/30 dark:from-gray-900/30 dark:to-teal-950/20 mb-6 sm:mb-8">
                 <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
@@ -474,7 +456,6 @@ function ProjectsPage() {
                 </CardContent>
             </Card>
 
-            {/* Projects Table */}
             <Card className="border-none bg-gradient-to-r from-white/30 to-teal-50/30 dark:from-gray-900/30 dark:to-teal-950/20">
                 <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
@@ -493,12 +474,7 @@ function ProjectsPage() {
                                 <TableRow className="hover:bg-transparent border-b dark:border-gray-800">
                                     <TableHead className="w-[40px]">
                                         <div className="flex items-center justify-center">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className={`h-6 w-6 p-0 ${selectedProjects.length === projects.length ? 'bg-teal-100 dark:bg-teal-900' : ''}`}
-                                                onClick={toggleSelectAll}
-                                            >
+                                            <Button variant="ghost" size="sm" className={`h-6 w-6 p-0 ${(selectedProjects.length !== 0 && selectedProjects.length) === projects.length ? 'bg-teal-100 dark:bg-teal-900' : ''}`} onClick={toggleSelectAll}>
                                                 <CheckIcon className={`h-4 w-4 ${selectedProjects.length === projects.length ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
                                             </Button>
                                         </div>
@@ -513,12 +489,7 @@ function ProjectsPage() {
                                     <TableRow key={project.id} className="hover:bg-teal-50/50 dark:hover:bg-teal-900/20 border-b dark:border-gray-800">
                                         <TableCell>
                                             <div className="flex items-center justify-center">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className={`h-6 w-6 p-0 ${project.selected ? 'bg-teal-100 dark:bg-teal-900' : ''}`}
-                                                    onClick={() => toggleProjectSelection(project.id)}
-                                                >
+                                                <Button variant="ghost" size="sm" className={`h-6 w-6 p-0 ${project.selected ? 'bg-teal-100 dark:bg-teal-900' : ''}`} onClick={() => toggleProjectSelection(project.id)}>
                                                     <CheckIcon className={`h-4 w-4 ${project.selected ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
                                                 </Button>
                                             </div>
@@ -618,48 +589,14 @@ function ProjectsPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Bulk Actions Floating Panel */}
             {selectedProjects.length > 0 && (
                 <div className="fixed bottom-4 right-4 flex gap-2 bg-white dark:bg-gray-900 p-2 rounded-lg shadow-lg border dark:border-gray-700">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                            setSelectedProjects([])
-                            setProjects(projects.map(p => ({ ...p, selected: false })))
-                        }}
-                        className="text-gray-500"
-                    >
-                        Deselect All
-                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => {setSelectedProjects([]); setProjects(projects.map(p => ({...p, selected: false})))}} className="text-gray-500">Deselect All</Button>
                     <div className="flex items-center gap-1 px-2 border-l dark:border-gray-700">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => exportSelectedProjects('json')}
-                            className="text-teal-500 hover:text-teal-600"
-                        >
-                            <DownloadIcon className="h-3 w-3 mr-1" />
-                            Export JSON
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => exportSelectedProjects('csv')}
-                            className="text-teal-500 hover:text-teal-600"
-                        >
-                            <DownloadIcon className="h-3 w-3 mr-1" />
-                            Export CSV
-                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => exportSelectedProjects('json')} className="text-teal-500 hover:text-teal-600"><DownloadIcon className="h-3 w-3 mr-1" />Export JSON</Button>
+                        <Button variant="outline" size="sm" onClick={() => exportSelectedProjects('csv')} className="text-teal-500 hover:text-teal-600"><DownloadIcon className="h-3 w-3 mr-1" />Export CSV</Button>
                     </div>
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={deleteSelectedProjects}
-                        className="bg-red-500 hover:bg-red-600"
-                    >
-                        Delete Selected ({selectedProjects.length})
-                    </Button>
+                    <Button variant="destructive" size="sm" onClick={deleteSelectedProjects} className="bg-red-500 hover:bg-red-600">Delete Selected ({selectedProjects.length})</Button>
                 </div>
             )}
         </div>

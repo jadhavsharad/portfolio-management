@@ -263,107 +263,165 @@ function SkillsPage() {
             <div className="mb-6 sm:mb-8">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 rounded-2xl border border-amber-100 dark:border-gray-700 shadow-sm">
                     <div className="space-y-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><GearIcon className="h-6 w-6" /> Skills Manager</h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2"><InfoCircledIcon className="h-4 w-4" /> Manage your skills and expertise. Organize them into categories and showcase your proficiency levels.</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <GearIcon className="h-6 w-6" /> Skills Manager
+                        </h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2">
+                            <InfoCircledIcon className="h-4 w-4" /> Manage your skills and expertise. Organize them into categories and showcase your proficiency levels.
+                        </p>
                     </div>
                 </div>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg"><StarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-amber-600 dark:text-amber-400" /></div>
+                        <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                            <StarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-amber-600 dark:text-amber-400" />
+                        </div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Key Skills</p>
                             <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{keySkills.length}</p>
                         </div>
                     </div>
                 </div>
+
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg"><FolderIcon className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 dark:text-blue-400" /></div>
+                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <FolderIcon className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 dark:text-blue-400" />
+                        </div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Categories</p>
                             <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{categories.length}</p>
                         </div>
                     </div>
                 </div>
+
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg"><CodeIcon className="h-5 sm:h-6 w-5 sm:w-6 text-purple-600 dark:text-purple-400" /></div>
+                        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <CodeIcon className="h-5 sm:h-6 w-5 sm:w-6 text-purple-600 dark:text-purple-400" />
+                        </div>
                         <div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Total Skills</p>
-                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{categories.reduce((acc, cat) => acc + cat.skills.length, 0)}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                {categories.reduce((acc, cat) => acc + cat.skills.length, 0)}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                {/* Key Skills Management */}
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
-                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2"><StarIcon className="h-4 sm:h-5 w-4 sm:w-5 text-amber-500" />Key Skills Management</h2>
+                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+                        <StarIcon className="h-4 sm:h-5 w-4 sm:w-5 text-amber-500" />Key Skills Management
+                    </h2>
                     <div className="space-y-3 sm:space-y-4">
-                        <div className="flex items-center gap-2"><TextIcon className="h-4 w-4" /><Input placeholder="Skill name" value={newKeySkill.name} onChange={(e) => setNewKeySkill({ ...newKeySkill, name: e.target.value })} disabled={isLoading} className="text-sm sm:text-base" /></div>
-                        <div className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /><Input placeholder="Icon URL" value={newKeySkill.imageUrl} onChange={(e) => setNewKeySkill({ ...newKeySkill, imageUrl: e.target.value })} disabled={isLoading} className="text-sm sm:text-base" /></div>
-                        <Button onClick={addKeySkill} disabled={isLoading} className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm sm:text-base py-2 sm:py-3"><PlusIcon className="h-4 w-4 mr-2" />Add Key Skill</Button>
-                    </div>
-                    <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2">
-                        {keySkills.map((skill, index) => {
-                            const colorSchemes = [
-                                { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-800 dark:text-blue-200', hover: 'hover:bg-blue-200 dark:hover:bg-blue-800' },
-                                { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-800 dark:text-purple-200', hover: 'hover:bg-purple-200 dark:hover:bg-purple-800' },
-                                { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-200', hover: 'hover:bg-green-200 dark:hover:bg-green-800' },
-                                { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-800 dark:text-amber-200', hover: 'hover:bg-amber-200 dark:hover:bg-amber-800' },
-                                { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-200', hover: 'hover:bg-red-200 dark:hover:bg-red-800' },
-                                { bg: 'bg-indigo-100 dark:bg-indigo-900/30', text: 'text-indigo-800 dark:text-indigo-200', hover: 'hover:bg-indigo-200 dark:hover:bg-indigo-800' }
-                            ];
-                            const colorScheme = colorSchemes[index % colorSchemes.length];
-                            return (
-                                <div key={skill.name} className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-0.5 sm:py-1 ${colorScheme.bg} ${colorScheme.text} rounded-full text-xs sm:text-sm`}>
-                                    {skill.imageUrl && <img src={skill.imageUrl} alt={skill.name} className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" onError={(e) => e.currentTarget.src = ''} />}
-                                    <span>{skill.name}</span>
-                                    <Button variant="ghost" size="icon" onClick={() => removeKeySkill(skill)} className={`h-3 w-3 sm:h-4 sm:w-4 p-0 ${colorScheme.hover}`}><TrashIcon className="h-2 w-2 sm:h-3 sm:w-3" /></Button>
-                                </div>
-                            );
-                        })}
+                        <div className="flex items-center gap-2">
+                            <TextIcon className="h-4 w-4" />
+                            <Input placeholder="Skill name" value={newKeySkill.name} 
+                                onChange={(e) => setNewKeySkill({ ...newKeySkill, name: e.target.value })} 
+                                disabled={isLoading} className="text-sm sm:text-base" />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <ImageIcon className="h-4 w-4" />
+                            <Input placeholder="Icon URL" value={newKeySkill.imageUrl} 
+                                onChange={(e) => setNewKeySkill({ ...newKeySkill, imageUrl: e.target.value })} 
+                                disabled={isLoading} className="text-sm sm:text-base" />
+                        </div>
+                        <Button onClick={addKeySkill} disabled={isLoading} 
+                            className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm sm:text-base py-2 sm:py-3">
+                            <PlusIcon className="h-4 w-4 mr-2" />Add Key Skill
+                        </Button>
                     </div>
                 </div>
+
+                {/* Category Management */}
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
-                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2"><FolderIcon className="h-4 sm:h-5 w-4 sm:w-5 text-blue-500" />Category Management</h2>
+                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+                        <FolderIcon className="h-4 sm:h-5 w-4 sm:w-5 text-blue-500" />Category Management
+                    </h2>
                     <div className="flex gap-2 sm:gap-3">
-                        <Input placeholder="Category name" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} disabled={isLoading} className="text-sm sm:text-base" />
-                        <Button onClick={addCategory} disabled={isLoading} className="text-sm sm:text-base"><PlusIcon className="h-4 w-4 mr-2" />Add</Button>
+                        <Input placeholder="Category name" value={newCategory} 
+                            onChange={(e) => setNewCategory(e.target.value)} 
+                            disabled={isLoading} className="text-sm sm:text-base" />
+                        <Button onClick={addCategory} disabled={isLoading} className="text-sm sm:text-base">
+                            <PlusIcon className="h-4 w-4 mr-2" />Add
+                        </Button>
                     </div>
                 </div>
+
+                {/* Add New Skill */}
                 <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
-                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2"><CodeIcon className="h-4 sm:h-5 w-4 sm:w-5 text-purple-500" />Add New Skill</h2>
+                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+                        <CodeIcon className="h-4 sm:h-5 w-4 sm:w-5 text-purple-500" />Add New Skill
+                    </h2>
                     <div className="space-y-3 sm:space-y-4">
                         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                             <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base">
                                 <SelectValue placeholder={categories.length === 0 ? "No categories available" : "Choose category"} />
                             </SelectTrigger>
                             <SelectContent>
-                                {categories.length === 0 ? <SelectItem value="empty" disabled>Add a category first</SelectItem> : categories.map((category) => <SelectItem key={category.name} value={category.name}>{category.name}</SelectItem>)}
+                                {categories.length === 0 ? 
+                                    <SelectItem value="empty" disabled>Add a category first</SelectItem> : 
+                                    categories.map((category) => (
+                                        <SelectItem key={category.name} value={category.name}>{category.name}</SelectItem>
+                                    ))
+                                }
                             </SelectContent>
                         </Select>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                            <div className="flex items-center gap-2"><TextIcon className="h-4 w-4" /><Input placeholder="Skill name" value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} disabled={!selectedCategory || isLoading} className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" /></div>
-                            <div className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /><Input placeholder="Icon URL" value={newSkill.imageUrl || ''} onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} disabled={!selectedCategory || isLoading} className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" /></div>
+                            <div className="flex items-center gap-2">
+                                <TextIcon className="h-4 w-4" />
+                                <Input placeholder="Skill name" value={newSkill.name} 
+                                    onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} 
+                                    disabled={!selectedCategory || isLoading} 
+                                    className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <ImageIcon className="h-4 w-4" />
+                                <Input placeholder="Icon URL" value={newSkill.imageUrl || ''} 
+                                    onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} 
+                                    disabled={!selectedCategory || isLoading} 
+                                    className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" />
+                            </div>
                         </div>
                         <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-3 sm:p-4">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                                 <div className="flex items-center gap-2 sm:gap-3">
                                     <Switch checked={showProficiency} onCheckedChange={setShowProficiency} id="show-proficiency" />
-                                    <label htmlFor="show-proficiency" className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Include proficiency</label>
+                                    <label htmlFor="show-proficiency" className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                                        Include proficiency
+                                    </label>
                                 </div>
-                                {showProficiency && <div className="flex items-center gap-2"><BarChartIcon className="h-4 w-4" /><Input type="number" min="0" max="100" placeholder="Level (0-100)" value={newSkill.level || ''} onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} className="w-24 sm:w-32 bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" disabled={!selectedCategory || isLoading} /></div>}
+                                {showProficiency && (
+                                    <div className="flex items-center gap-2">
+                                        <BarChartIcon className="h-4 w-4" />
+                                        <Input type="number" min="0" max="100" placeholder="Level (0-100)" 
+                                            value={newSkill.level || ''} 
+                                            onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} 
+                                            className="w-24 sm:w-32 bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" 
+                                            disabled={!selectedCategory || isLoading} />
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <Button onClick={addSkill} disabled={!selectedCategory || isLoading} className="w-full bg-purple-500 hover:bg-purple-600 text-white transition-all duration-200 text-sm sm:text-base py-2 sm:py-3"><PlusIcon className="h-4 w-4 mr-2" />Add Skill</Button>
+                        <Button onClick={addSkill} disabled={!selectedCategory || isLoading} 
+                            className="w-full bg-purple-500 hover:bg-purple-600 text-white transition-all duration-200 text-sm sm:text-base py-2 sm:py-3">
+                            <PlusIcon className="h-4 w-4 mr-2" />Add Skill
+                        </Button>
                     </div>
                 </div>
             </div>
+
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="p-6">
-                    <h2 className="text-lg font-semibold mb-6 flex items-center gap-2"><ListBulletIcon className="h-5 w-5" />Skills by Category</h2>
+                    <h2 className="text-lg font-semibold mb-6 flex items-center gap-2">
+                        <ListBulletIcon className="h-5 w-5" />Skills by Category
+                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categories.length === 0 ? (
                             <div className="col-span-full p-12 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
@@ -373,39 +431,66 @@ function SkillsPage() {
                             </div>
                         ) : (
                             categories.map((category) => (
-                                <motion.div key={category.name} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 rounded-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+                                <motion.div key={category.name} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} 
+                                    className="backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 rounded-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
                                     <div className="p-6">
                                         <div className="flex items-center justify-between mb-6">
-                                            <h3 className="text-xl font-bold flex items-center gap-2"><FolderIcon className="h-5 w-5" />{category.name}</h3>
+                                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                                <FolderIcon className="h-5 w-5" />{category.name}
+                                            </h3>
                                             <AlertDialog>
-                                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500"><TrashIcon className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Delete Category</AlertDialogTitle>
-                                                        <AlertDialogDescription>This will permanently delete "{category.name}" and all its skills.</AlertDialogDescription>
+                                                        <AlertDialogDescription>
+                                                            This will permanently delete "{category.name}" and all its skills.
+                                                        </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => removeCategory(category.name)} className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                                                        <AlertDialogAction onClick={() => removeCategory(category.name)} 
+                                                            className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
                                         </div>
                                         <div className="space-y-3">
                                             {category.skills?.length === 0 ? (
-                                                <div className="p-4 text-center text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center gap-2"><InfoCircledIcon className="h-4 w-4" />No skills added</div>
+                                                <div className="p-4 text-center text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center gap-2">
+                                                    <InfoCircledIcon className="h-4 w-4" />No skills added
+                                                </div>
                                             ) : (
                                                 category.skills?.map((skill) => (
-                                                    <motion.div key={skill.name} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="group relative bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-4 transition-all duration-200">
+                                                    <motion.div key={skill.name} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} 
+                                                        className="group relative bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-4 transition-all duration-200">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
-                                                                {skill.imageUrl ? <img src={skill.imageUrl} alt={skill.name} className="h-6 w-6 rounded-md" onError={(e) => e.currentTarget.src = ''} /> : <div className="h-6 w-6 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><CodeIcon className="h-4 w-4 text-gray-500" /></div>}
+                                                                {skill.imageUrl ? (
+                                                                    <img src={skill.imageUrl} alt={skill.name} className="h-6 w-6 rounded-md" 
+                                                                        onError={(e) => e.currentTarget.src = ''} />
+                                                                ) : (
+                                                                    <div className="h-6 w-6 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                                                        <CodeIcon className="h-4 w-4 text-gray-500" />
+                                                                    </div>
+                                                                )}
                                                                 <span className="font-medium text-gray-800 dark:text-gray-200">{skill.name}</span>
                                                             </div>
                                                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} className="text-gray-400 hover:text-blue-500"><GearIcon className="h-4 w-4" /></Button>
+                                                                <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} 
+                                                                    className="text-gray-400 hover:text-blue-500">
+                                                                    <GearIcon className="h-4 w-4" />
+                                                                </Button>
                                                                 <AlertDialog>
-                                                                    <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500"><Cross2Icon className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                                                    <AlertDialogTrigger asChild>
+                                                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
+                                                                            <Cross2Icon className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </AlertDialogTrigger>
                                                                     <AlertDialogContent>
                                                                         <AlertDialogHeader>
                                                                             <AlertDialogTitle>Delete Skill</AlertDialogTitle>
@@ -413,7 +498,8 @@ function SkillsPage() {
                                                                         </AlertDialogHeader>
                                                                         <AlertDialogFooter>
                                                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                            <AlertDialogAction onClick={() => removeSkill(category.name, skill.name)} className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                                                                            <AlertDialogAction onClick={() => removeSkill(category.name, skill.name)} 
+                                                                                className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
                                                                         </AlertDialogFooter>
                                                                     </AlertDialogContent>
                                                                 </AlertDialog>
@@ -422,11 +508,15 @@ function SkillsPage() {
                                                         {skill.level !== undefined && (
                                                             <div className="mt-3">
                                                                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                                                                    <span className="flex items-center gap-1"><BarChartIcon className="h-3 w-3" />Proficiency</span>
+                                                                    <span className="flex items-center gap-1">
+                                                                        <BarChartIcon className="h-3 w-3" />Proficiency
+                                                                    </span>
                                                                     <span>{skill.level}%</span>
                                                                 </div>
                                                                 <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${skill.level}%` }} transition={{ duration: 0.5, ease: "easeOut" }} className="h-full bg-blue-500" />
+                                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${skill.level}%` }} 
+                                                                        transition={{ duration: 0.5, ease: "easeOut" }} 
+                                                                        className="h-full bg-blue-500" />
                                                                 </div>
                                                             </div>
                                                         )}
@@ -442,7 +532,9 @@ function SkillsPage() {
                 </div>
             </div>
             {editingSkill && (
-                <EditSkillDialog skill={editingSkill.skill} category={editingSkill.category} isOpen={!!editingSkill} onClose={() => setEditingSkill(null)} onSave={updateSkill} />
+                <EditSkillDialog skill={editingSkill.skill} category={editingSkill.category}
+                    isOpen={!!editingSkill} onClose={() => setEditingSkill(null)}
+                    onSave={updateSkill} />
             )}
         </div>
     );
