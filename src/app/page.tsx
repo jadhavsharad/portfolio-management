@@ -56,8 +56,9 @@ function DashboardPage() {
     totalCertifications: 0
   })
   
-  // State for recent activity feed
+  // State for recent activity feed and commits
   const [recentActivities, setRecentActivities] = useState<any[]>([])
+  const [recentCommits, setRecentCommits] = useState<any[]>([])
 
   // Handler for navigation between pages
   const handleNavigation = (path: string) => {
@@ -117,8 +118,11 @@ function DashboardPage() {
           description: commit.commit.message,
           timestamp: new Date(commit.commit.author?.date || new Date()),
           timeAgo: getTimeAgo(new Date(commit.commit.author?.date || new Date())),
-          url: commit.html_url // Direct link to commit on GitHub
+          url: commit.html_url
         }))
+
+        // Set recent commits separately (max 12)
+        setRecentCommits(githubActivities.slice(0, 12))
 
         // Fetch storage activity
         const { data: storageData } = await axios.get('/api/blob')
@@ -127,7 +131,8 @@ function DashboardPage() {
           title: 'File Upload',
           description: `Uploaded ${file.pathname.split('/').pop()}`,
           timestamp: new Date(file.uploadedAt),
-          timeAgo: getTimeAgo(new Date(file.uploadedAt))
+          timeAgo: getTimeAgo(new Date(file.uploadedAt)),
+          icon: <UploadIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
         }))
 
         // Fetch Firestore documents
@@ -198,9 +203,8 @@ function DashboardPage() {
           timeAgo: getTimeAgo(new Date(cert.updatedAt || cert.date?.seconds * 1000))
         })) || []
 
-        // Combine and sort all activities by timestamp
+        // Combine and sort all non-commit activities by timestamp
         const allActivities = [
-          ...githubActivities,
           ...storageActivities,
           ...projectActivities,
           ...skillActivities,
@@ -351,38 +355,46 @@ function DashboardPage() {
 
           {/* Activity List */}
           <div className="space-y-4">
-            {/* Filter out commit activities and map remaining activities */}
-            {recentActivities.filter(activity => activity.type !== ACTIVITY_TYPES.commit).map((activity, index) => {
-              // Determine navigation path based on activity type
-              const getPath = () => {
-                switch(activity.type) {
-                  case ACTIVITY_TYPES.project: return '/projects';
-                  case ACTIVITY_TYPES.skill: 
-                  case ACTIVITY_TYPES.category: return '/skills';
-                  case ACTIVITY_TYPES.certification: return '/certifications';
-                  default: return '';
-                }
-              };
+            {recentActivities.length > 0 ? (
+              recentActivities.map((activity, index) => {
+                // Determine navigation path based on activity type
+                const getPath = () => {
+                  switch(activity.type) {
+                    case ACTIVITY_TYPES.project: return '/projects';
+                    case ACTIVITY_TYPES.skill: return '/skills';
+                    case ACTIVITY_TYPES.category: return '/skills';
+                    case ACTIVITY_TYPES.certification: return '/certifications';
+                    default: return '';
+                  }
+                };
 
-              return (
-                <div key={index} onClick={() => handleNavigation(getPath())} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
-                  {/* Activity Icon Container */}
-                  <div className={`h-8 w-8 rounded-full ${activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' : activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' : activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : 'bg-purple-100 dark:bg-purple-950/40'} flex items-center justify-center`}>
-                    {/* Render appropriate icon based on activity type */}
-                    {activity.type === ACTIVITY_TYPES.project && <PackageIcon className="h-4 w-4 text-blue-600 dark:text-blue-300" />}
-                    {activity.type === ACTIVITY_TYPES.skill && <CodeIcon className="h-4 w-4 text-orange-600 dark:text-orange-300" />}
-                    {activity.type === ACTIVITY_TYPES.category && <FolderPlusIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-300" />}
-                    {activity.type === ACTIVITY_TYPES.certification && <GraduationCapIcon className="h-4 w-4 text-purple-600 dark:text-purple-300" />}
+                return (
+                  <div key={index} onClick={() => handleNavigation(getPath())} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                    {/* Activity Icon Container */}
+                    <div className={`h-8 w-8 rounded-full ${activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' : activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' : activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : activity.type === 'storage' ? 'bg-indigo-100 dark:bg-indigo-950/40' : 'bg-purple-100 dark:bg-purple-950/40'} flex items-center justify-center`}>
+                      {/* Render appropriate icon based on activity type */}
+                      {activity.type === ACTIVITY_TYPES.project && <PackageIcon className="h-4 w-4 text-blue-600 dark:text-blue-300" />}
+                      {activity.type === ACTIVITY_TYPES.skill && <CodeIcon className="h-4 w-4 text-orange-600 dark:text-orange-300" />}
+                      {activity.type === ACTIVITY_TYPES.category && <FolderPlusIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-300" />}
+                      {activity.type === ACTIVITY_TYPES.certification && <GraduationCapIcon className="h-4 w-4 text-purple-600 dark:text-purple-300" />}
+                      {activity.type === 'storage' && <UploadIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />}
+                    </div>
+                    {/* Activity Details */}
+                    <div>
+                      <h3 className="text-sm font-medium">{activity.title}</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
+                    </div>
+                    <span className="ml-auto text-xs text-gray-400">{activity.timeAgo}</span>
                   </div>
-                  {/* Activity Details */}
-                  <div>
-                    <h3 className="text-sm font-medium">{activity.title}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{activity.description}</p>
-                  </div>
-                  <span className="ml-auto text-xs text-gray-400">{activity.timeAgo}</span>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <ActivityIcon className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No recent activities to display</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">New activities will appear here</p>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -394,18 +406,16 @@ function DashboardPage() {
             <h2 className="text-lg font-medium">Recent Portfolio Updates</h2>
           </div>
           {/* Updates List */}
-          <div className="space-y-4">
-            {/* Filter and display only commit activities */}
-            {recentActivities
-              .filter(activity => activity.type === ACTIVITY_TYPES.commit)
-              .map((commit, index) => (
+          <div className="space-y-4" role="list" aria-label="Recent commits">
+            {recentCommits.length > 0 ? (
+              recentCommits.map((commit, index) => (
                 <a
                   key={index}
                   href={commit.url}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none active:outline active:outline-2 active:outline-green-500"
-                  aria-label={`View commit: ${commit.description}`}
+                  rel="noopener noreferrer" 
+                  className="group flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-green-500"
+                  role="listitem"
                 >
                   {/* Commit Icon */}
                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 dark:bg-green-950/40 flex items-center justify-center" aria-hidden="true">
@@ -413,12 +423,19 @@ function DashboardPage() {
                   </div>
                   {/* Commit Details */}
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-medium truncate">{commit.title}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{commit.description}</p>
+                    <h3 className="text-sm font-medium truncate" id={`commit-${index}-title`}>{commit.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate" id={`commit-${index}-desc`}>{commit.description}</p>
                   </div>
-                  <span className="flex-shrink-0 text-xs text-gray-400">{commit.timeAgo}</span>
+                  <span className="flex-shrink-0 text-xs text-gray-400" aria-label={`Committed ${commit.timeAgo}`}>{commit.timeAgo}</span>
                 </a>
-              ))}
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <GitBranchIcon className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-3" />
+                <p className="text-gray-500 dark:text-gray-400">No recent updates to display</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">New commits will appear here</p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

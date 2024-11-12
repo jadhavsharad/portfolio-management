@@ -12,7 +12,7 @@ import {
     ReloadIcon,
 } from '@radix-ui/react-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { ShareIcon, AlertCircle, Upload, RefreshCwIcon, PlusCircleIcon, FileTextIcon, ImageIcon, VideoIcon, FileIcon, CalendarIcon, DatabaseIcon, ArrowDownToLineIcon, Trash2Icon, Share2Icon, InboxIcon, UploadCloudIcon, PencilIcon, HashIcon, CheckIcon, XIcon, ClipboardCopyIcon, AlertOctagonIcon, FolderIcon, InfoIcon, TableIcon, FileEditIcon, PackageIcon } from 'lucide-react';
+import { RefreshCwIcon, VideoIcon, DatabaseIcon, Trash2Icon, Share2Icon, InboxIcon, UploadCloudIcon, PencilIcon, HashIcon, CheckIcon, XIcon, ClipboardCopyIcon, AlertOctagonIcon, FolderIcon, InfoIcon, TableIcon, FileEditIcon, PackageIcon, HardDriveIcon, ClockIcon, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Type definition for file metadata
@@ -53,6 +53,7 @@ export default function StoragePage() {
 
     useEffect(() => {
         fetchFiles();
+        
     }, []);
 
     // Handle file selection
@@ -83,7 +84,7 @@ export default function StoragePage() {
         formData.append('addSuffix', addSuffix.toString());
 
         try {
-            await axios.post('/api/blob', formData, {
+            const response = await axios.post('/api/blob', formData, {
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round(
                         (progressEvent.loaded * 100) / (progressEvent.total || 100)
@@ -96,7 +97,13 @@ export default function StoragePage() {
             setFileToUpload(null);
             setShowUploadDialog(false);
             fetchFiles();
-            toast.success('File uploaded successfully');
+            toast.success('File uploaded successfully', {
+                description: (
+                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono break-all">
+                        {response.data.url}
+                    </div>
+                )
+            });
         } catch (error) {
             toast.error('Upload failed. Please try again.');
         } finally {
@@ -135,31 +142,28 @@ export default function StoragePage() {
             </div>
         );
     };
-
     return (
-        <div className="container max-w-7xl mx-auto p-6 space-y-10">
+        <div className="container max-w-7xl mx-auto p-4 sm:p-6">
             {/* Header section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100 shadow-sm">
-                <div className="space-y-3">
-                    <h1 className="text-3xl font-bold flex items-center gap-3 text-blue-700">
-                        <FolderIcon className="h-7 w-7" />
-                        Vercel Storage
-                    </h1>
-                    <p className="text-sm text-slate-600 flex items-center gap-2">
-                        <InfoIcon className="h-4 w-4 text-blue-400" />
-                        Vercel's Blob Storage
-                    </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4 lg:col-span-2 justify-end">
-                    <div className="flex gap-3">
+            <div className="mb-6 sm:mb-8">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 rounded-2xl border border-blue-100 dark:border-gray-700 shadow-sm">
+                    <div className="space-y-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                            Storage Manager
+                        </h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg">
+                            Manage your files using Vercel's Blob Storage. Upload, share and organize your assets efficiently.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={fetchFiles}
                             disabled={loading}
-                            className="bg-white hover:bg-slate-50 transition-colors"
+                            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
                         >
-                            <RefreshCwIcon className="mr-2 h-4 w-4 text-emerald-500" />
+                            <RefreshCwIcon className="mr-2 h-4 w-4" />
                             Refresh
                         </Button>
                         <Input
@@ -172,7 +176,7 @@ export default function StoragePage() {
                         <label htmlFor="file-upload">
                             <Button
                                 size="sm"
-                                className="cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all"
+                                className="cursor-pointer bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                                 disabled={uploading}
                                 asChild
                             >
@@ -186,231 +190,230 @@ export default function StoragePage() {
                 </div>
             </div>
 
-            {/* Files grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                {files.map((file) => (
-                    <Card
-                        key={file.url}
-                        className="relative overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300"
-                    >
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500" />
-                        <div className="p-5 space-y-4">
-                            <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl flex items-center justify-center">
-                                {file.pathname.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-                                    <ImageIcon className="h-10 w-10 text-emerald-500" />
-                                ) : file.pathname.match(/\.(mp4|mov|avi)$/i) ? (
-                                    <VideoIcon className="h-10 w-10 text-amber-500" />
-                                ) : (
-                                    <FileIcon className="h-10 w-10 text-slate-500" />
-                                )}
-                            </div>
-                            <div className="space-y-3">
-                                <h3 className="font-medium text-sm truncate flex items-center gap-2 text-slate-800">
-                                    <FileIcon className="h-4 w-4 text-blue-500" />
-                                    {file.pathname.split('/').pop()}
-                                </h3>
-                                <div className="flex flex-col gap-2">
-                                    <p className="text-xs text-slate-600 flex items-center gap-2">
-                                        <CalendarIcon className="h-3.5 w-3.5 text-indigo-400" />
-                                        {new Date(file.uploadedAt).toLocaleDateString()}
-                                    </p>
-                                    <p className="text-xs text-slate-600 flex items-center gap-2">
-                                        <DatabaseIcon className="h-3.5 w-3.5 text-emerald-400" />
-                                        {(file.size / 1024).toFixed(1)}KB
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-3">
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    className="bg-emerald-50 hover:bg-emerald-100 transition-colors"
-                                    asChild
-                                >
-                                    <a href={file.url} target="_blank" rel="noopener noreferrer">
-                                        <DownloadIcon className="h-4 w-4 text-emerald-600" />
-                                    </a>
-                                </Button>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    className="bg-red-50 hover:bg-red-100 transition-colors"
-                                    onClick={() => {
-                                        setSelectedFile(file);
-                                        setShowDeleteDialog(true);
-                                    }}
-                                >
-                                    <Trash2Icon className="h-4 w-4 text-red-600" />
-                                </Button>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    className="bg-indigo-50 hover:bg-indigo-100 transition-colors"
-                                    onClick={() => {
-                                        setSelectedFile(file);
-                                        setShowShareDialog(true);
-                                    }}
-                                >
-                                    <Share2Icon className="h-4 w-4 text-indigo-600" />
-                                </Button>
-                            </div>
+            {/* Stats Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <DatabaseIcon className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 dark:text-blue-400" />
                         </div>
-                    </Card>
-                ))}
-
-                {files.length === 0 && !loading && (
-                    <div className="col-span-full text-center py-16 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl border border-slate-100">
-                        <InboxIcon className="h-16 w-16 text-blue-400 mx-auto mb-4" />
-                        <p className="text-slate-600">Your storage is empty</p>
-                        <p className="text-sm text-slate-500 mt-2">Upload files to get started</p>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Total Files</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{files.length}</p>
+                        </div>
                     </div>
-                )}
-
-                {loading && (
-                    <div className="col-span-full text-center py-16">
-                        <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                        <p className="text-slate-600">Loading your files...</p>
+                </div>
+                
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                            <HardDriveIcon className="h-5 sm:h-6 w-5 sm:w-6 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Total Size</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                {(files.reduce((acc, file) => acc + file.size, 0) / (1000 * 1000)).toFixed(2)} MB
+                            </p>
+                        </div>
                     </div>
-                )}
+                </div>
+
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <ClockIcon className="h-5 sm:h-6 w-5 sm:w-6 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Last Upload</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                {files.length > 0 ? new Date(files[0].uploadedAt).toLocaleDateString() : '-'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Upload dialog */}
+            {/* Files List */}
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                <div className="p-4 sm:p-6">
+                    <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">Your Files</h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        {files.map((file) => (
+                            <div
+                                key={file.url}
+                                className="group relative bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4 hover:shadow-md transition-all duration-200"
+                            >
+                                <div className="flex items-start gap-3 sm:gap-4">
+                                    <div className="p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                        {file.pathname.match(/\.(mp4|mov|avi)$/i) ? (
+                                            <VideoIcon className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 dark:text-blue-400" />
+                                        ) : (
+                                            <ImageIcon className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 dark:text-blue-400" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0 pr-20"> {/* Added right padding to prevent overlap */}
+                                        <h3 className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                                            {file.pathname.split('/').pop()}
+                                        </h3>
+                                        <div className="mt-1 flex flex-col gap-1">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {new Date(file.uploadedAt).toLocaleDateString()}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                {Math.round(file.size / 1000)} KB
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-50 dark:bg-gray-800 p-1 rounded-lg">
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-7 w-7 p-0"
+                                            asChild
+                                        >
+                                            <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                                <DownloadIcon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                                            </a>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-7 w-7 p-0"
+                                            onClick={() => {
+                                                setSelectedFile(file);
+                                                setShowShareDialog(true);
+                                            }}
+                                        >
+                                            <Share2Icon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-7 w-7 p-0"
+                                            onClick={() => {
+                                                setSelectedFile(file);
+                                                setShowDeleteDialog(true);
+                                            }}
+                                        >
+                                            <Trash2Icon className="h-4 w-4 text-red-500" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+
+                        {files.length === 0 && !loading && (
+                            <div className="col-span-full text-center py-12 sm:py-16">
+                                <InboxIcon className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                                <p className="text-gray-600 dark:text-gray-400">No files uploaded yet</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Upload files to get started</p>
+                            </div>
+                        )}
+
+                        {loading && (
+                            <div className="col-span-full text-center py-12 sm:py-16">
+                                <div className="animate-spin h-8 w-8 border-3 border-blue-500 border-t-transparent rounded-full mx-auto mb-3 sm:mb-4"></div>
+                                <p className="text-gray-600 dark:text-gray-400">Loading files...</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Dialogs */}
             <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-                <DialogContent className="sm:max-w-md bg-white">
+                <DialogContent className="sm:max-w-md mx-4">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-blue-600">
-                            <UploadCloudIcon className="h-5 w-5" />
-                            Upload File
-                        </DialogTitle>
+                        <DialogTitle>Upload File</DialogTitle>
                         <DialogDescription>
-                            Customize your file upload settings
+                            Configure your file upload settings
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium flex items-center gap-2">
-                                <FileIcon className="h-4 w-4 text-blue-500" />
-                                Selected File
-                            </label>
-                            <p className="text-sm text-slate-600">{fileToUpload?.name}</p>
+                            <label className="text-sm font-medium">Selected File</label>
+                            <p className="text-sm text-gray-500 break-all">{fileToUpload?.name}</p>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium flex items-center gap-2">
-                                <PencilIcon className="h-4 w-4 text-indigo-500" />
-                                Custom Filename
-                            </label>
+                            <label className="text-sm font-medium">Custom Filename</label>
                             <Input
                                 placeholder="Enter custom filename"
                                 value={customFileName}
                                 onChange={(e) => setCustomFileName(e.target.value)}
-                                className="bg-white"
                             />
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="addSuffix"
                                 checked={addSuffix}
                                 onChange={(e) => setAddSuffix(e.target.checked)}
-                                className="h-4 w-4 text-blue-600"
                             />
-                            <label htmlFor="addSuffix" className="text-sm flex items-center gap-2">
-                                <HashIcon className="h-4 w-4 text-emerald-500" />
+                            <label htmlFor="addSuffix" className="text-sm">
                                 Add random suffix to filename
                             </label>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowUploadDialog(false)}
-                            disabled={uploading}
-                            className="bg-slate-50"
-                        >
-                            <XIcon className="mr-2 h-4 w-4" />
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleUpload}
-                            disabled={uploading}
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600"
-                        >
-                            <CheckIcon className="mr-2 h-4 w-4" />
+                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                        <Button variant="outline" onClick={() => setShowUploadDialog(false)}>Cancel</Button>
+                        <Button onClick={handleUpload} disabled={uploading}>
                             {uploading ? 'Uploading...' : 'Upload'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
-            {/* Share dialog */}
             <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
-                <DialogContent className="sm:max-w-md bg-white">
+                <DialogContent className="sm:max-w-md mx-4">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-indigo-600">
-                            <Share2Icon className="h-5 w-5" />
-                            Share File
-                        </DialogTitle>
+                        <DialogTitle>Share File</DialogTitle>
                         <DialogDescription>
-                            Copy the link below to share this file
+                            Copy the file URL to share
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <Input
                             readOnly
                             value={selectedFile?.url || ''}
                             onClick={(e) => e.currentTarget.select()}
-                            className="text-sm bg-white"
+                            className="flex-1"
                         />
                         <Button
                             onClick={() => {
                                 navigator.clipboard.writeText(selectedFile?.url || '');
-                                toast.success('Link copied to clipboard');
+                                toast.success('URL copied to clipboard');
                             }}
                             variant="outline"
-                            size="sm"
-                            className="bg-indigo-50 hover:bg-indigo-100"
                         >
-                            <ClipboardCopyIcon className="h-4 w-4 text-indigo-600" />
+                            Copy
                         </Button>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            {/* Delete confirmation dialog */}
             <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <DialogContent className="sm:max-w-md bg-white">
+                <DialogContent className="sm:max-w-md mx-4">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-red-600">
-                            <AlertOctagonIcon className="h-5 w-5" />
-                            Confirm Deletion
-                        </DialogTitle>
+                        <DialogTitle>Delete File</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete this file? This action cannot be undone.
+                        </DialogDescription>
                     </DialogHeader>
-                    <p className="text-sm text-slate-600">
-                        Are you sure you want to delete this file? This action cannot be undone.
-                    </p>
-                    <div className="flex justify-end gap-3">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setShowDeleteDialog(false)}
-                            className="bg-slate-50"
-                        >
-                            <XIcon className="mr-2 h-4 w-4" />
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="destructive"
-                            size="sm"
+                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                        <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+                        <Button 
+                            variant="destructive" 
                             onClick={() => handleDelete(selectedFile?.url || '')}
-                            className="bg-gradient-to-r from-red-600 to-red-700"
                         >
-                            <Trash2Icon className="mr-2 h-4 w-4" />
                             Delete
                         </Button>
-                    </div>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
-
             {renderUploadProgress()}
         </div>
     );

@@ -365,40 +365,97 @@ function ProjectsPage() {
     )
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 p-4 sm:p-6 md:p-8 lg:p-10 max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-7xl mx-auto" role="main" aria-label="Projects Management">
-            <Card className="border-none bg-gradient-to-r from-white/30 to-sky-50/30 dark:from-gray-900/30 dark:to-sky-950/20">
+        <div className="container max-w-7xl mx-auto p-4 sm:p-6">
+            <div className="mb-6 sm:mb-8">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 rounded-2xl border dark:border-gray-700 shadow-sm">
+                    <div className="space-y-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <GearIcon className="h-6 w-6" /> Projects Manager
+                        </h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2">
+                            <InfoIcon className="h-4 w-4" /> Manage your portfolio projects and showcase your work.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                            <StarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                {projects.filter(p => p.isCompleted).length}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-rose-100 dark:bg-rose-900/30 rounded-lg">
+                            <SparklesIcon className="h-5 sm:h-6 w-5 sm:w-6 text-rose-600 dark:text-rose-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Upcoming</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                {projects.filter(p => !p.isCompleted).length}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
+                            <FolderIcon className="h-5 sm:h-6 w-5 sm:w-6 text-violet-600 dark:text-violet-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Total Projects</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                                {projects.length}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Create Project Form */}
+            <Card className="border-none bg-gradient-to-r from-white/30 to-teal-50/30 dark:from-gray-900/30 dark:to-teal-950/20 mb-6 sm:mb-8">
                 <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
-                        <SparklesIcon className="h-4 w-4 text-sky-400 dark:text-sky-500" aria-hidden="true" />
+                        <SparklesIcon className="h-4 w-4 text-teal-400 dark:text-teal-500" />
                         <CardTitle className="text-base sm:text-lg md:text-xl">Create Project</CardTitle>
                     </div>
                     <CardDescription className="flex items-center gap-1.5">
-                        <StarIcon className="h-3 w-3 text-sky-300 dark:text-sky-400" aria-hidden="true" />
+                        <StarIcon className="h-3 w-3 text-teal-300 dark:text-teal-400" />
                         <span>Share your work</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={addProject} className="space-y-3">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div className="flex items-center gap-2 bg-transparent border border-sky-100 dark:border-sky-800/50 rounded-md px-3">
+                            <div className="flex items-center gap-2 bg-transparent border dark:border-gray-800/50 rounded-md px-3">
                                 {INPUT_ICONS.title}
                                 <Input name="title" placeholder="Project Title" value={formData.title} onChange={handleInputChange} disabled={isLoading} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label="Project Title" />
                             </div>
-                            <div className="flex items-center gap-2 bg-transparent border border-sky-100 dark:border-sky-800/50 rounded-md px-3">
+                            <div className="flex items-center gap-2 bg-transparent border dark:border-gray-800/50 rounded-md px-3">
                                 {INPUT_ICONS.link}
                                 <Input name="link" placeholder="Project Link" value={formData.link} onChange={handleInputChange} disabled={isLoading} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label="Project Link" />
                             </div>
                         </div>
-                        <div className="flex gap-2 bg-transparent border border-sky-100 dark:border-sky-800/50 rounded-md px-3 py-2">
+                        <div className="flex gap-2 bg-transparent border dark:border-gray-800/50 rounded-md px-3 py-2">
                             {INPUT_ICONS.description}
                             <Textarea name="description" placeholder="Project Description" value={formData.description} onChange={handleInputChange} disabled={isLoading} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label="Project Description" />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div className="flex items-center gap-2 col-span-1 sm:col-span-2">
-                                <Button type="button" onClick={() => handleMediaTypeChange('image')} className={`flex-1 ${formData.mediaType === 'image' ? 'bg-sky-500 dark:bg-sky-600 text-white' : 'bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-300'} hover:bg-sky-200 dark:hover:bg-sky-800`}>Image</Button>
-                                <Button type="button" onClick={() => handleMediaTypeChange('video')} className={`flex-1 ${formData.mediaType === 'video' ? 'bg-sky-500 dark:bg-sky-600 text-white' : 'bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-300'} hover:bg-sky-200 dark:hover:bg-sky-800`}>Video</Button>
+                                <Button type="button" onClick={() => handleMediaTypeChange('image')} className={`flex-1 ${formData.mediaType === 'image' ? 'bg-teal-500 dark:bg-teal-600 text-white' : 'bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300'} hover:bg-teal-200 dark:hover:bg-teal-800`}>Image</Button>
+                                <Button type="button" onClick={() => handleMediaTypeChange('video')} className={`flex-1 ${formData.mediaType === 'video' ? 'bg-teal-500 dark:bg-teal-600 text-white' : 'bg-teal-100 dark:bg-teal-900 text-teal-600 dark:text-teal-300'} hover:bg-teal-200 dark:hover:bg-teal-800`}>Video</Button>
                             </div>
-                            <div className="flex items-center gap-2 bg-transparent border border-sky-100 dark:border-sky-800/50 rounded-md px-3 col-span-1 sm:col-span-2">
+                            <div className="flex items-center gap-2 bg-transparent border dark:border-gray-800/50 rounded-md px-3 col-span-1 sm:col-span-2">
                                 {INPUT_ICONS.media}
                                 <Input name="mediaUrl" placeholder={`${formData.mediaType === 'image' ? 'Image' : 'Video'} URL`} value={formData.mediaUrl} onChange={handleInputChange} disabled={isLoading} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label={`${formData.mediaType === 'image' ? 'Image' : 'Video'} URL`} />
                             </div>
@@ -411,37 +468,38 @@ function ProjectsPage() {
                                     <SelectItem value="upcoming">Upcoming Project</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button type="submit" disabled={isLoading} className="bg-sky-500 hover:bg-sky-600 text-white dark:bg-sky-600 dark:hover:bg-sky-700">{isLoading ? 'Creating...' : 'Create Project'}</Button>
+                            <Button type="submit" disabled={isLoading} className="bg-teal-500 hover:bg-teal-600 text-white dark:bg-teal-600 dark:hover:bg-teal-700">{isLoading ? 'Creating...' : 'Create Project'}</Button>
                         </div>
                     </form>
                 </CardContent>
             </Card>
 
-            <Card className="border-none bg-gradient-to-r from-white/30 to-sky-50/30 dark:from-gray-900/30 dark:to-sky-950/20">
+            {/* Projects Table */}
+            <Card className="border-none bg-gradient-to-r from-white/30 to-teal-50/30 dark:from-gray-900/30 dark:to-teal-950/20">
                 <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
-                        <GearIcon className="h-4 w-4 text-sky-400 dark:text-sky-500" aria-hidden="true" />
+                        <FolderIcon className="h-4 w-4 text-teal-400 dark:text-teal-500" />
                         <CardTitle className="text-base sm:text-lg md:text-xl">Project Gallery</CardTitle>
                     </div>
                     <CardDescription className="flex items-center gap-1.5">
-                        <InfoIcon className="h-3 w-3 text-sky-300 dark:text-sky-400" aria-hidden="true" />
+                        <InfoIcon className="h-3 w-3 text-teal-300 dark:text-teal-400" />
                         <span>Your creative portfolio</span>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="rounded-lg border border-sky-100 dark:border-sky-800/50 overflow-x-auto">
+                    <div className="rounded-lg border dark:border-gray-800/50 overflow-x-auto">
                         <Table>
                             <TableHeader>
-                                <TableRow className="hover:bg-transparent border-b border-gray-200 dark:border-gray-800">
+                                <TableRow className="hover:bg-transparent border-b dark:border-gray-800">
                                     <TableHead className="w-[40px]">
                                         <div className="flex items-center justify-center">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className={`h-6 w-6 p-0 ${selectedProjects.length === projects.length ? 'bg-sky-100 dark:bg-sky-900' : ''}`}
+                                                className={`h-6 w-6 p-0 ${selectedProjects.length === projects.length ? 'bg-teal-100 dark:bg-teal-900' : ''}`}
                                                 onClick={toggleSelectAll}
                                             >
-                                                <CheckIcon className={`h-4 w-4 ${selectedProjects.length === projects.length ? 'text-sky-600 dark:text-sky-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                                                <CheckIcon className={`h-4 w-4 ${selectedProjects.length === projects.length ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
                                             </Button>
                                         </div>
                                     </TableHead>
@@ -452,16 +510,16 @@ function ProjectsPage() {
                             </TableHeader>
                             <TableBody>
                                 {projects.map((project) => (
-                                    <TableRow key={project.id} className="hover:bg-sky-50/50 dark:hover:bg-sky-900/20 border-b border-gray-100 dark:border-gray-800">
+                                    <TableRow key={project.id} className="hover:bg-teal-50/50 dark:hover:bg-teal-900/20 border-b dark:border-gray-800">
                                         <TableCell>
                                             <div className="flex items-center justify-center">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className={`h-6 w-6 p-0 ${project.selected ? 'bg-sky-100 dark:bg-sky-900' : ''}`}
+                                                    className={`h-6 w-6 p-0 ${project.selected ? 'bg-teal-100 dark:bg-teal-900' : ''}`}
                                                     onClick={() => toggleProjectSelection(project.id)}
                                                 >
-                                                    <CheckIcon className={`h-4 w-4 ${project.selected ? 'text-sky-600 dark:text-sky-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                                                    <CheckIcon className={`h-4 w-4 ${project.selected ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -469,7 +527,7 @@ function ProjectsPage() {
                                         <TableCell className="text-xs text-muted-foreground max-w-[200px] sm:max-w-[300px] md:max-w-[400px] truncate">{project.description}</TableCell>
                                         <TableCell>
                                             {project.link ? (
-                                                <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-sky-400 dark:text-sky-500 hover:text-sky-500 dark:hover:text-sky-400" aria-label={`Visit ${project.title} project`}>Visit <ExternalLinkIcon className="h-3 w-3" aria-hidden="true" /></a>
+                                                <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-teal-400 dark:text-teal-500 hover:text-teal-500 dark:hover:text-teal-400" aria-label={`Visit ${project.title} project`}>Visit <ExternalLinkIcon className="h-3 w-3" aria-hidden="true" /></a>
                                             ) : (
                                                 <span className="text-xs text-gray-400 dark:text-gray-500">Coming Soon</span>
                                             )}
@@ -479,7 +537,7 @@ function ProjectsPage() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex gap-1">
-                                                <Button variant="ghost" size="sm" onClick={() => openEditDialog(project)} className="text-sky-500 hover:text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:text-sky-300 dark:hover:bg-sky-900/20" aria-label={`Edit ${project.title}`}><Pencil1Icon className="h-3 w-3" aria-hidden="true" /></Button>
+                                                <Button variant="ghost" size="sm" onClick={() => openEditDialog(project)} className="text-teal-500 hover:text-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:hover:text-teal-300 dark:hover:bg-teal-900/20" aria-label={`Edit ${project.title}`}><Pencil1Icon className="h-3 w-3" aria-hidden="true" /></Button>
                                                 <Button variant="ghost" size="sm" onClick={() => confirmDelete(project.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20" aria-label={`Delete ${project.title}`}><Cross2Icon className="h-3 w-3" aria-hidden="true" /></Button>
                                             </div>
                                         </TableCell>
@@ -493,14 +551,14 @@ function ProjectsPage() {
             </Card>
 
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-[95%] sm:w-[90%] md:w-[85%] lg:w-[75%] max-w-3xl">
+                <DialogContent className="bg-white dark:bg-gray-900 border dark:border-gray-800 w-[95%] sm:w-[90%] md:w-[85%] lg:w-[75%] max-w-3xl">
                     <DialogHeader>
                         <div className="flex items-center gap-2">
-                            <Pencil1Icon className="h-4 w-4 text-sky-500 dark:text-sky-400" aria-hidden="true" />
+                            <Pencil1Icon className="h-4 w-4 text-teal-500 dark:text-teal-400" aria-hidden="true" />
                             <DialogTitle>Enhance Project</DialogTitle>
                         </div>
                         <DialogDescription className="flex items-center gap-1.5">
-                            <SparklesIcon className="h-3 w-3 text-sky-400 dark:text-sky-500" aria-hidden="true" />
+                            <SparklesIcon className="h-3 w-3 text-teal-400 dark:text-teal-500" aria-hidden="true" />
                             <span>Make it even better</span>
                         </DialogDescription>
                     </DialogHeader>
@@ -508,13 +566,13 @@ function ProjectsPage() {
                         <div className="space-y-3">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {['title', 'link'].map(key => (
-                                    <div key={key} className="flex items-center gap-2 bg-transparent border border-gray-200 dark:border-gray-700 rounded-md px-3">
+                                    <div key={key} className="flex items-center gap-2 bg-transparent border dark:border-gray-700 rounded-md px-3">
                                         {INPUT_ICONS[key as keyof typeof INPUT_ICONS]}
                                         <Input name={key} placeholder={`Project ${key}`} value={editingProject ? (editingProject as any)[key] : ''} onChange={handleInputChange} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label={`Project ${key}`} />
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex items-center gap-2 bg-transparent border border-gray-200 dark:border-gray-700 rounded-md px-3">
+                            <div className="flex items-center gap-2 bg-transparent border dark:border-gray-700 rounded-md px-3">
                                 {INPUT_ICONS.description}
                                 <Textarea name="description" placeholder="Project description" value={editingProject?.description || ''} onChange={handleInputChange} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label="Project description" />
                             </div>
@@ -526,7 +584,7 @@ function ProjectsPage() {
                                         <SelectItem value="video">Video</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <div className="flex items-center gap-2 bg-transparent border border-gray-200 dark:border-gray-700 rounded-md px-3">
+                                <div className="flex items-center gap-2 bg-transparent border dark:border-gray-700 rounded-md px-3">
                                     {INPUT_ICONS.media}
                                     <Input name="mediaUrl" placeholder={`${editingProject?.mediaType === 'image' ? 'Image' : 'Video'} URL`} value={editingProject?.mediaUrl || ''} onChange={handleInputChange} className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0" aria-label={`${editingProject?.mediaType === 'image' ? 'Image' : 'Video'} URL`} />
                                 </div>
@@ -541,7 +599,7 @@ function ProjectsPage() {
                         </div>
                         <div className="flex flex-col sm:flex-row justify-end gap-2">
                             <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={updateProject} className="bg-sky-500 hover:bg-sky-600 text-white dark:bg-sky-600 dark:hover:bg-sky-700">Update Project</Button>
+                            <Button onClick={updateProject} className="bg-teal-500 hover:bg-teal-600 text-white dark:bg-teal-600 dark:hover:bg-teal-700">Update Project</Button>
                         </div>
                     </div>
                 </DialogContent>
@@ -562,7 +620,7 @@ function ProjectsPage() {
 
             {/* Bulk Actions Floating Panel */}
             {selectedProjects.length > 0 && (
-                <div className="fixed bottom-4 right-4 flex gap-2 bg-white dark:bg-gray-900 p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+                <div className="fixed bottom-4 right-4 flex gap-2 bg-white dark:bg-gray-900 p-2 rounded-lg shadow-lg border dark:border-gray-700">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -574,12 +632,12 @@ function ProjectsPage() {
                     >
                         Deselect All
                     </Button>
-                    <div className="flex items-center gap-1 px-2 border-l border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-1 px-2 border-l dark:border-gray-700">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => exportSelectedProjects('json')}
-                            className="text-sky-500 hover:text-sky-600"
+                            className="text-teal-500 hover:text-teal-600"
                         >
                             <DownloadIcon className="h-3 w-3 mr-1" />
                             Export JSON
@@ -588,7 +646,7 @@ function ProjectsPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => exportSelectedProjects('csv')}
-                            className="text-sky-500 hover:text-sky-600"
+                            className="text-teal-500 hover:text-teal-600"
                         >
                             <DownloadIcon className="h-3 w-3 mr-1" />
                             Export CSV
@@ -604,7 +662,7 @@ function ProjectsPage() {
                     </Button>
                 </div>
             )}
-        </motion.div>
+        </div>
     )
 }
 

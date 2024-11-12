@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { withAuth } from '@/components/hoc/with-auth'
-import { Cross2Icon, ExternalLinkIcon, Pencil1Icon, Pencil2Icon } from '@radix-ui/react-icons'
+import { Cross2Icon, ExternalLinkIcon, ListBulletIcon, Pencil1Icon } from '@radix-ui/react-icons'
 import { db } from '@/lib/firebase'
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { useToast } from '@/hooks/use-toast'
@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { AwardIcon, BuildingIcon, CalendarIcon, FileTextIcon, FolderIcon, LinkIcon, SparklesIcon, StarIcon } from 'lucide-react'
+import { AwardIcon, BuildingIcon, CalendarIcon, FileTextIcon, FolderIcon, InfoIcon, LinkIcon, SparklesIcon, StarIcon } from 'lucide-react'
 
 // Interface defining the structure of a certification
 interface Certification {
@@ -176,35 +176,44 @@ function CertificationsPage() {
   }
 
   return (
-    // Main container with animation
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6 max-w-7xl mx-auto px-4 py-8"
-    >
-      <Card className="border-none bg-gradient-to-r from-white/30 to-sky-50/30 dark:from-gray-950/30 dark:to-sky-900/20">
+    <div className="container max-w-7xl mx-auto p-4 sm:p-6">
+      {/* Header Section */}
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6 bg-gradient-to-r from-sky-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 rounded-2xl border border-sky-100 dark:border-gray-700 shadow-sm">
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <SparklesIcon className="h-6 w-6" /> Certifications Manager
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2">
+              <InfoIcon className="h-4 w-4" /> Manage your professional certifications and achievements.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Add/Edit Certification Form */}
+      <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 mb-6">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <SparklesIcon className="h-4 w-4 text-sky-500" aria-hidden="true" />
-            <CardTitle className="text-lg">{isEditing ? 'Enhance Certification' : 'New Certification'}</CardTitle>
+            <SparklesIcon className="h-4 w-4 text-sky-500" />
+            <CardTitle className="text-lg">{isEditing ? 'Update Certification' : 'Add New Certification'}</CardTitle>
           </div>
           <CardDescription className="flex items-center gap-1.5">
-            <StarIcon className="h-3 w-3 text-sky-400" aria-hidden="true" />
-            <span>{isEditing ? 'Make your certification even better' : 'Share your professional achievements'}</span>
+            <StarIcon className="h-3 w-3 text-sky-400" />
+            <span>{isEditing ? 'Update your certification details' : 'Add your professional certification'}</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="flex items-center gap-2 bg-transparent border border-gray-200 dark:border-gray-800 rounded-md px-3">
-                <FolderIcon className="h-3.5 w-3.5 text-sky-400" aria-hidden="true" />
+              <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50 px-3">
+                <FolderIcon className="h-3.5 w-3.5 text-sky-400" />
                 <Input 
                   placeholder="Certification Title"
                   value={newCert.title}
                   onChange={(e) => setNewCert({ ...newCert, title: e.target.value })}
                   disabled={isLoading}
-                  className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
               <div className="flex items-center gap-2 bg-transparent border border-gray-200 dark:border-gray-800 rounded-md px-3">
@@ -254,7 +263,7 @@ function CertificationsPage() {
               <Button 
                 onClick={isEditing ? updateCertification : addCertification}
                 disabled={isLoading}
-                className="bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600"
+                className="bg-sky-500 hover:bg-sky-600 text-white transition-all duration-200"
               >
                 {isEditing ? 'Update' : 'Add'} Certification
               </Button>
@@ -263,6 +272,7 @@ function CertificationsPage() {
                   onClick={cancelEditing}
                   disabled={isLoading}
                   variant="outline"
+                  className="border-gray-200 dark:border-gray-700"
                 >
                   Cancel
                 </Button>
@@ -272,16 +282,21 @@ function CertificationsPage() {
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        {certifications.map((cert) => (
-          <motion.div
-            key={cert.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Card className="border-l-2 border-l-sky-500 bg-gradient-to-r from-white/50 to-sky-50/30 dark:from-gray-950/50 dark:to-sky-900/20">
-              <CardContent className="p-4">
+      {/* Certifications List */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+        <div className="p-6">
+          <h2 className="text-lg font-semibold mb-6 flex items-center gap-2">
+            <ListBulletIcon className="h-5 w-5" />Your Certifications
+          </h2>
+          <div className="space-y-4">
+            {certifications.map((cert) => (
+              <motion.div
+                key={cert.id}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="group backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 rounded-lg border border-gray-200/50 dark:border-gray-700/50 p-4"
+              >
                 <div className="flex flex-col md:flex-row justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -356,12 +371,12 @@ function CertificationsPage() {
                     </AlertDialog>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 

@@ -6,14 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { withAuth } from '@/components/hoc/with-auth'
-import { Cross2Icon, GearIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
+import { Cross2Icon, GearIcon, InfoCircledIcon, ListBulletIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { db } from '@/lib/firebase'
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { useToast } from '@/hooks/use-toast'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { CodeIcon, FolderIcon, ImageIcon, InfoIcon, StarIcon } from 'lucide-react'
+import { BarChartIcon, CodeIcon, FolderIcon, ImageIcon, InfoIcon, StarIcon, TextIcon } from 'lucide-react'
+import { ScrollArea } from '@radix-ui/react-scroll-area'
 
 interface Skill {
     name: string
@@ -40,7 +41,6 @@ interface EditSkillDialogProps {
     onClose: () => void
     onSave: (categoryName: string, oldSkillName: string, updatedSkill: Skill) => void
 }
-
 function SkillsPage() {
     const [categories, setCategories] = useState<Category[]>([])
     const [keySkills, setKeySkills] = useState<KeySkill[]>([])
@@ -259,220 +259,193 @@ function SkillsPage() {
     }
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 max-w-7xl mx-auto p-2 sm:p-3 md:p-4">
-            <Card className="bg-gradient-to-br from-teal-50/30 to-teal-50/30 dark:from-teal-950/30 dark:to-teal-950/30 border-teal-100 dark:border-teal-900">
-                <CardHeader className="pb-2">
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                        <StarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500" />
-                        <CardTitle className="text-base sm:text-lg md:text-xl">Key Skills</CardTitle>
+        <div className="container max-w-7xl mx-auto p-4 sm:p-6">
+            <div className="mb-6 sm:mb-8">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-8 rounded-2xl border border-amber-100 dark:border-gray-700 shadow-sm">
+                    <div className="space-y-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><GearIcon className="h-6 w-6" /> Skills Manager</h1>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 max-w-lg flex items-center gap-2"><InfoCircledIcon className="h-4 w-4" /> Manage your skills and expertise. Organize them into categories and showcase your proficiency levels.</p>
                     </div>
-                    <CardDescription className="text-sm sm:text-base">Add and manage your core technical skills with icons</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col space-y-2 mb-3 sm:mb-4">
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                            <CodeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
-                            <Input placeholder="Add key skill name" value={newKeySkill.name} onChange={(e) => setNewKeySkill({ ...newKeySkill, name: e.target.value })} disabled={isLoading} className="bg-white/80 dark:bg-gray-950/60" />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg"><StarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-amber-600 dark:text-amber-400" /></div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Key Skills</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{keySkills.length}</p>
                         </div>
-                        <div className="flex space-x-1.5 sm:space-x-2">
-                            <div className="flex items-center gap-1.5 sm:gap-2 flex-1">
-                                <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
-                                <Input placeholder="Add skill image URL" value={newKeySkill.imageUrl} onChange={(e) => setNewKeySkill({ ...newKeySkill, imageUrl: e.target.value })} disabled={isLoading} className="bg-white/80 dark:bg-gray-950/60" />
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg"><FolderIcon className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600 dark:text-blue-400" /></div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Categories</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{categories.length}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg"><CodeIcon className="h-5 sm:h-6 w-5 sm:w-6 text-purple-600 dark:text-purple-400" /></div>
+                        <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Total Skills</p>
+                            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{categories.reduce((acc, cat) => acc + cat.skills.length, 0)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2"><StarIcon className="h-4 sm:h-5 w-4 sm:w-5 text-amber-500" />Key Skills Management</h2>
+                    <div className="space-y-3 sm:space-y-4">
+                        <div className="flex items-center gap-2"><TextIcon className="h-4 w-4" /><Input placeholder="Skill name" value={newKeySkill.name} onChange={(e) => setNewKeySkill({ ...newKeySkill, name: e.target.value })} disabled={isLoading} className="text-sm sm:text-base" /></div>
+                        <div className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /><Input placeholder="Icon URL" value={newKeySkill.imageUrl} onChange={(e) => setNewKeySkill({ ...newKeySkill, imageUrl: e.target.value })} disabled={isLoading} className="text-sm sm:text-base" /></div>
+                        <Button onClick={addKeySkill} disabled={isLoading} className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm sm:text-base py-2 sm:py-3"><PlusIcon className="h-4 w-4 mr-2" />Add Key Skill</Button>
+                    </div>
+                    <div className="mt-3 sm:mt-4 flex flex-wrap gap-1.5 sm:gap-2">
+                        {keySkills.map((skill, index) => {
+                            const colorSchemes = [
+                                { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-800 dark:text-blue-200', hover: 'hover:bg-blue-200 dark:hover:bg-blue-800' },
+                                { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-800 dark:text-purple-200', hover: 'hover:bg-purple-200 dark:hover:bg-purple-800' },
+                                { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-800 dark:text-green-200', hover: 'hover:bg-green-200 dark:hover:bg-green-800' },
+                                { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-800 dark:text-amber-200', hover: 'hover:bg-amber-200 dark:hover:bg-amber-800' },
+                                { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-800 dark:text-red-200', hover: 'hover:bg-red-200 dark:hover:bg-red-800' },
+                                { bg: 'bg-indigo-100 dark:bg-indigo-900/30', text: 'text-indigo-800 dark:text-indigo-200', hover: 'hover:bg-indigo-200 dark:hover:bg-indigo-800' }
+                            ];
+                            const colorScheme = colorSchemes[index % colorSchemes.length];
+                            return (
+                                <div key={skill.name} className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-0.5 sm:py-1 ${colorScheme.bg} ${colorScheme.text} rounded-full text-xs sm:text-sm`}>
+                                    {skill.imageUrl && <img src={skill.imageUrl} alt={skill.name} className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" onError={(e) => e.currentTarget.src = ''} />}
+                                    <span>{skill.name}</span>
+                                    <Button variant="ghost" size="icon" onClick={() => removeKeySkill(skill)} className={`h-3 w-3 sm:h-4 sm:w-4 p-0 ${colorScheme.hover}`}><TrashIcon className="h-2 w-2 sm:h-3 sm:w-3" /></Button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2"><FolderIcon className="h-4 sm:h-5 w-4 sm:w-5 text-blue-500" />Category Management</h2>
+                    <div className="flex gap-2 sm:gap-3">
+                        <Input placeholder="Category name" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} disabled={isLoading} className="text-sm sm:text-base" />
+                        <Button onClick={addCategory} disabled={isLoading} className="text-sm sm:text-base"><PlusIcon className="h-4 w-4 mr-2" />Add</Button>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2"><CodeIcon className="h-4 sm:h-5 w-4 sm:w-5 text-purple-500" />Add New Skill</h2>
+                    <div className="space-y-3 sm:space-y-4">
+                        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                            <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base">
+                                <SelectValue placeholder={categories.length === 0 ? "No categories available" : "Choose category"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories.length === 0 ? <SelectItem value="empty" disabled>Add a category first</SelectItem> : categories.map((category) => <SelectItem key={category.name} value={category.name}>{category.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                            <div className="flex items-center gap-2"><TextIcon className="h-4 w-4" /><Input placeholder="Skill name" value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} disabled={!selectedCategory || isLoading} className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" /></div>
+                            <div className="flex items-center gap-2"><ImageIcon className="h-4 w-4" /><Input placeholder="Icon URL" value={newSkill.imageUrl || ''} onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} disabled={!selectedCategory || isLoading} className="bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" /></div>
+                        </div>
+                        <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-3 sm:p-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <Switch checked={showProficiency} onCheckedChange={setShowProficiency} id="show-proficiency" />
+                                    <label htmlFor="show-proficiency" className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Include proficiency</label>
+                                </div>
+                                {showProficiency && <div className="flex items-center gap-2"><BarChartIcon className="h-4 w-4" /><Input type="number" min="0" max="100" placeholder="Level (0-100)" value={newSkill.level || ''} onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} className="w-24 sm:w-32 bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm text-sm sm:text-base" disabled={!selectedCategory || isLoading} /></div>}
                             </div>
-                            <Button onClick={addKeySkill} disabled={isLoading} variant="outline" className="border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950">
-                                <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
-                            </Button>
                         </div>
+                        <Button onClick={addSkill} disabled={!selectedCategory || isLoading} className="w-full bg-purple-500 hover:bg-purple-600 text-white transition-all duration-200 text-sm sm:text-base py-2 sm:py-3"><PlusIcon className="h-4 w-4 mr-2" />Add Skill</Button>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                        {keySkills.length === 0 ? (
-                            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
-                                <InfoIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                <span>No key skills added yet</span>
+                </div>
+            </div>
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                <div className="p-6">
+                    <h2 className="text-lg font-semibold mb-6 flex items-center gap-2"><ListBulletIcon className="h-5 w-5" />Skills by Category</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {categories.length === 0 ? (
+                            <div className="col-span-full p-12 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
+                                <FolderIcon className="h-16 w-16 text-gray-400/40 mb-4" />
+                                <p className="text-lg text-gray-600 dark:text-gray-300">No categories yet</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Create categories to organize your skills</p>
                             </div>
                         ) : (
-                            keySkills.map((skill, index) => (
-                                <div key={index} className="flex items-center gap-1 bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg border border-teal-200 dark:border-teal-800">
-                                    {skill.imageUrl && <img src={skill.imageUrl} alt={skill.name} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-                                    <span className="text-xs sm:text-sm">{skill.name}</span>
-                                    <Button variant="ghost" size="icon" onClick={() => removeKeySkill(skill)} className="h-4 w-4 sm:h-5 sm:w-5 hover:text-red-500">
-                                        <Cross2Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                    </Button>
-                                </div>
+                            categories.map((category) => (
+                                <motion.div key={category.name} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 rounded-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+                                    <div className="p-6">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h3 className="text-xl font-bold flex items-center gap-2"><FolderIcon className="h-5 w-5" />{category.name}</h3>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500"><TrashIcon className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                                                        <AlertDialogDescription>This will permanently delete "{category.name}" and all its skills.</AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => removeCategory(category.name)} className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {category.skills?.length === 0 ? (
+                                                <div className="p-4 text-center text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center gap-2"><InfoCircledIcon className="h-4 w-4" />No skills added</div>
+                                            ) : (
+                                                category.skills?.map((skill) => (
+                                                    <motion.div key={skill.name} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="group relative bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-4 transition-all duration-200">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                {skill.imageUrl ? <img src={skill.imageUrl} alt={skill.name} className="h-6 w-6 rounded-md" onError={(e) => e.currentTarget.src = ''} /> : <div className="h-6 w-6 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><CodeIcon className="h-4 w-4 text-gray-500" /></div>}
+                                                                <span className="font-medium text-gray-800 dark:text-gray-200">{skill.name}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} className="text-gray-400 hover:text-blue-500"><GearIcon className="h-4 w-4" /></Button>
+                                                                <AlertDialog>
+                                                                    <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500"><Cross2Icon className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                                                    <AlertDialogContent>
+                                                                        <AlertDialogHeader>
+                                                                            <AlertDialogTitle>Delete Skill</AlertDialogTitle>
+                                                                            <AlertDialogDescription>Delete "{skill.name}" from {category.name}?</AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogFooter>
+                                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                            <AlertDialogAction onClick={() => removeSkill(category.name, skill.name)} className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                                                                        </AlertDialogFooter>
+                                                                    </AlertDialogContent>
+                                                                </AlertDialog>
+                                                            </div>
+                                                        </div>
+                                                        {skill.level !== undefined && (
+                                                            <div className="mt-3">
+                                                                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                                                    <span className="flex items-center gap-1"><BarChartIcon className="h-3 w-3" />Proficiency</span>
+                                                                    <span>{skill.level}%</span>
+                                                                </div>
+                                                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${skill.level}%` }} transition={{ duration: 0.5, ease: "easeOut" }} className="h-full bg-blue-500" />
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </motion.div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                </motion.div>
                             ))
                         )}
                     </div>
-                </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
-                <Card className="bg-gradient-to-br from-teal-50/30 to-teal-50/30 dark:from-teal-950/30 dark:to-teal-950/30 border-teal-100 dark:border-teal-900">
-                    <CardHeader className="pb-2">
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                            <FolderIcon className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500" />
-                            <CardTitle className="text-base sm:text-lg md:text-xl">Add New Category</CardTitle>
-                        </div>
-                        <CardDescription className="text-sm sm:text-base">Create a new category to group related skills together</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex space-x-1.5 sm:space-x-2">
-                            <Input placeholder="Category Name" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} disabled={isLoading} className="bg-white/80 dark:bg-gray-950/60" />
-                            <Button onClick={addCategory} disabled={isLoading} variant="outline" className="border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-950">
-                                <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-gradient-to-br from-teal-50/30 to-teal-50/30 dark:from-teal-950/30 dark:to-teal-950/30 border-teal-100 dark:border-teal-900 overflow-hidden">
-                    <CardHeader className="pb-2 relative">
-                        <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-teal-100/20 dark:bg-teal-900/20 rounded-full -translate-y-1/2 translate-x-1/2" />
-                        <div className="flex items-center gap-1.5 sm:gap-2 relative">
-                            <GearIcon className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 animate-spin-slow" />
-                            <CardTitle className="text-base sm:text-lg md:text-xl">Add New Skill</CardTitle>
-                        </div>
-                        <CardDescription className="mt-1 text-sm sm:text-base">Add a skill to an existing category with proficiency level</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col space-y-2 sm:space-y-3 relative">
-                            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                                <SelectTrigger className="bg-white/80 dark:bg-gray-950/60 border-teal-200 dark:border-teal-800">
-                                    <SelectValue placeholder="Select Category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {categories.length === 0 ? (
-                                        <div className="p-2 text-xs sm:text-sm text-muted-foreground flex items-center">
-                                            <InfoIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                                            No categories available
-                                        </div>
-                                    ) : (
-                                        categories.map((category, index) => (
-                                            <SelectItem key={index} value={category.name} className="hover:bg-teal-50 dark:hover:bg-teal-900/20">
-                                                {category.name}
-                                            </SelectItem>
-                                        ))
-                                    )}
-                                </SelectContent>
-                            </Select>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                                <div className="relative">
-                                    <Input placeholder="Skill Name" value={newSkill.name} onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })} disabled={isLoading || !selectedCategory} className="bg-white/80 dark:bg-gray-950/60 pl-8 sm:pl-9 border-teal-200 dark:border-teal-800" />
-                                    <CodeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-teal-500" />
-                                </div>
-                                <div className="relative">
-                                    <Input placeholder="Image URL" value={newSkill.imageUrl} onChange={(e) => setNewSkill({ ...newSkill, imageUrl: e.target.value })} disabled={isLoading || !selectedCategory} className="bg-white/80 dark:bg-gray-950/60 pl-8 sm:pl-9 border-teal-200 dark:border-teal-800" />
-                                    <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-teal-500" />
-                                </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-3 bg-teal-50/50 dark:bg-teal-900/20 rounded-lg">
-                                <div className="flex items-center space-x-1.5 sm:space-x-2 mb-2 sm:mb-0">
-                                    <Switch checked={showProficiency} onCheckedChange={setShowProficiency} id="show-proficiency" className="data-[state=checked]:bg-teal-500" />
-                                    <label htmlFor="show-proficiency" className="text-xs sm:text-sm flex items-center gap-1">
-                                        <StarIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
-                                        Show Proficiency Level
-                                    </label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    {showProficiency && (
-                                        <Input type="number" min="0" max="100" placeholder="Level" value={newSkill.level} onChange={(e) => setNewSkill({ ...newSkill, level: parseInt(e.target.value) })} disabled={isLoading || !selectedCategory} className="w-20 sm:w-24 bg-white/80 dark:bg-gray-950/80 border-teal-200 dark:border-teal-800" />
-                                    )}
-                                    <Button onClick={addSkill} disabled={isLoading || !selectedCategory} className="bg-teal-500 hover:bg-teal-600 text-white">
-                                        <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
-                                        Add
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                </div>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {categories.length === 0 ? (
-                    <div className="col-span-full flex items-center justify-center gap-1.5 sm:gap-2 py-6 sm:py-8 text-sm sm:text-base text-muted-foreground">
-                        <InfoIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                        <span>No categories added yet. Add a category to get started.</span>
-                    </div>
-                ) : (
-                    categories.map((category) => (
-                        <div key={category.name} className="bg-gradient-to-br from-gray-50/50 to-gray-50/50 dark:from-gray-900/50 dark:to-gray-900/50 rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-800">
-                            <div className="flex items-center justify-between mb-3 sm:mb-4">
-                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                    <FolderIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-teal-500" />
-                                    <h2 className="text-base sm:text-lg font-semibold tracking-tight text-foreground/90">{category.name}</h2>
-                                </div>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="icon" disabled={isLoading} className="h-7 w-7 sm:h-8 sm:w-8 hover:text-red-500">
-                                            <TrashIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Delete Category</AlertDialogTitle>
-                                            <AlertDialogDescription>Are you sure you want to delete the category "{category.name}" and all its skills?</AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => removeCategory(category.name)} className="bg-red-500 hover:bg-red-600 text-white">Delete</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-                            <div className="space-y-2 sm:space-y-3">
-                                {category.skills?.length === 0 ? (
-                                    <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
-                                        <InfoIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                        <span>No skills added to this category yet</span>
-                                    </div>
-                                ) : (
-                                    category.skills?.map((skill) => (
-                                        <div key={skill.name} className="group">
-                                            <div className="flex items-center justify-between mb-1 sm:mb-1.5">
-                                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                                    {skill.imageUrl ? <img src={skill.imageUrl} alt={skill.name} className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <CodeIcon className="h-3 w-3 text-teal-500" />}
-                                                    <span className="text-xs sm:text-sm font-medium text-foreground/80">{skill.name}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                                    {skill.level !== undefined && <span className="text-[10px] sm:text-xs text-muted-foreground">{skill.level}%</span>}
-                                                    <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} className="h-5 w-5 sm:h-6 sm:w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <GearIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                                    </Button>
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant="ghost" size="icon" disabled={isLoading} className="h-5 w-5 sm:h-6 sm:w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500">
-                                                                <Cross2Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Delete Skill</AlertDialogTitle>
-                                                                <AlertDialogDescription>Are you sure you want to delete the skill "{skill.name}"?</AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => removeSkill(category.name, skill.name)} className="bg-red-500 hover:bg-red-600 text-white">Delete</AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </div>
-                                            </div>
-                                            {skill.level !== undefined && (
-                                                <div className="h-0.5 sm:h-1 bg-muted/30 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full transition-all duration-300" style={{ width: `${skill.level}%` }} />
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
-                    ))
-                )}
-            </div>
-            {editingSkill && <EditSkillDialog skill={editingSkill.skill} category={editingSkill.category} isOpen={!!editingSkill} onClose={() => setEditingSkill(null)} onSave={updateSkill} />}
-        </motion.div>
-    )
+            {editingSkill && (
+                <EditSkillDialog skill={editingSkill.skill} category={editingSkill.category} isOpen={!!editingSkill} onClose={() => setEditingSkill(null)} onSave={updateSkill} />
+            )}
+        </div>
+    );
 }
 
 export default withAuth(SkillsPage)
