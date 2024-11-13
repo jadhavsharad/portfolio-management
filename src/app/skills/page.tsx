@@ -459,7 +459,7 @@ function SkillsPage() {
 
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
                 <div className="p-3">
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><ListBulletIcon className="h-5 w-5"/>Skills by Category</h2>
+                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><ListBulletIcon className="h-5 w-5"/>Skills</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {categories.length === 0 ? (
                             <div className="col-span-full p-4 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
