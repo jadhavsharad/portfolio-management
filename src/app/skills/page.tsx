@@ -458,78 +458,61 @@ function SkillsPage() {
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
-                <div className="p-6">
-                    <h2 className="text-lg font-semibold mb-6 flex items-center gap-2">
-                        <ListBulletIcon className="h-5 w-5" />Skills by Category
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="p-3">
+                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><ListBulletIcon className="h-5 w-5"/>Skills by Category</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {categories.length === 0 ? (
-                            <div className="col-span-full p-12 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
-                                <FolderIcon className="h-16 w-16 text-gray-400/40 mb-4" />
-                                <p className="text-lg text-gray-600 dark:text-gray-300">No categories yet</p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Create categories to organize your skills</p>
+                            <div className="col-span-full p-4 flex flex-col items-center justify-center bg-gray-50/50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
+                                <FolderIcon className="h-12 w-12 text-gray-400/40 mb-2"/>
+                                <p className="text-gray-600 dark:text-gray-300">No categories yet</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Create categories to organize your skills</p>
                             </div>
                         ) : (
-                            categories.map((category) => (
-                                <motion.div key={category.name} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} 
-                                    className="backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 rounded-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
-                                    <div className="p-6">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <h3 className="text-xl font-bold flex items-center gap-2">
-                                                <FolderIcon className="h-5 w-5" />{category.name}
-                                            </h3>
+                            categories.map(category => (
+                                <motion.div key={category.name} initial={{y:20,opacity:0}} animate={{y:0,opacity:1}} className="bg-white/80 dark:bg-gray-900/80 rounded-lg border border-gray-200/50 dark:border-gray-700/50">
+                                    <div className="p-3">
+                                        <div className="flex justify-between mb-3">
+                                            <h3 className="text-lg font-bold flex items-center gap-2"><FolderIcon className="h-4 w-4"/>{category.name}</h3>
                                             <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
-                                                        <TrashIcon className="h-4 w-4" />
-                                                    </Button>
-                                                </AlertDialogTrigger>
+                                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500"><TrashIcon className="h-4 w-4"/></Button></AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Delete Category</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            This will permanently delete "{category.name}" and all its skills.
-                                                        </AlertDialogDescription>
+                                                        <AlertDialogDescription>This will permanently delete "{category.name}" and all its skills.</AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => removeCategory(category.name)} 
-                                                            className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                                                        <AlertDialogAction onClick={() => removeCategory(category.name)} className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
                                         </div>
-                                        <div className="space-y-3">
-                                            {category.skills?.length === 0 ? (
-                                                <div className="p-4 text-center text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center gap-2">
-                                                    <InfoCircledIcon className="h-4 w-4" />No skills added
+                                        <div className="space-y-2">
+                                            {!category.skills?.length ? (
+                                                <div className="p-2 text-center text-gray-500 bg-gray-50/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center gap-2">
+                                                    <InfoCircledIcon className="h-4 w-4"/>No skills added
                                                 </div>
                                             ) : (
-                                                category.skills?.map((skill) => (
-                                                    <motion.div key={skill.name} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} 
-                                                        className="group relative bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-4 transition-all duration-200">
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-3">
+                                                category.skills?.map(skill => (
+                                                    <motion.div key={skill.name} initial={{x:-20,opacity:0}} animate={{x:0,opacity:1}} className="group bg-gray-50/50 dark:bg-gray-800/50 rounded-lg p-2">
+                                                        <div className="flex justify-between">
+                                                            <div className="flex items-center gap-2">
                                                                 {skill.imageUrl ? (
-                                                                    <img src={skill.imageUrl} alt={skill.name} className="h-6 w-6 rounded-md" 
-                                                                        onError={(e) => e.currentTarget.src = ''} />
+                                                                    <img src={skill.imageUrl} alt={skill.name} className="h-5 w-5 rounded" onError={e => e.currentTarget.src = ''} />
                                                                 ) : (
-                                                                    <div className="h-6 w-6 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                                                                        <CodeIcon className="h-4 w-4 text-gray-500" />
+                                                                    <div className="h-5 w-5 rounded bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                                                        <CodeIcon className="h-3 w-3 text-gray-500" />
                                                                     </div>
                                                                 )}
-                                                                <span className="font-medium text-gray-800 dark:text-gray-200">{skill.name}</span>
+                                                                <span className="font-medium">{skill.name}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <Button variant="ghost" size="icon" onClick={() => setEditingSkill({ skill, category: category.name })} 
-                                                                    className="text-gray-400 hover:text-blue-500">
-                                                                    <GearIcon className="h-4 w-4" />
+                                                            <div className="flex gap-1 opacity-0 group-hover:opacity-100">
+                                                                <Button variant="ghost" size="icon" onClick={() => setEditingSkill({skill,category:category.name})} className="text-gray-400 hover:text-blue-500">
+                                                                    <GearIcon className="h-3 w-3"/>
                                                                 </Button>
                                                                 <AlertDialog>
                                                                     <AlertDialogTrigger asChild>
-                                                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500">
-                                                                            <Cross2Icon className="h-4 w-4" />
-                                                                        </Button>
+                                                                        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-red-500"><Cross2Icon className="h-3 w-3"/></Button>
                                                                     </AlertDialogTrigger>
                                                                     <AlertDialogContent>
                                                                         <AlertDialogHeader>
@@ -538,25 +521,20 @@ function SkillsPage() {
                                                                         </AlertDialogHeader>
                                                                         <AlertDialogFooter>
                                                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                            <AlertDialogAction onClick={() => removeSkill(category.name, skill.name)} 
-                                                                                className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                                                                            <AlertDialogAction onClick={() => removeSkill(category.name, skill.name)} className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
                                                                         </AlertDialogFooter>
                                                                     </AlertDialogContent>
                                                                 </AlertDialog>
                                                             </div>
                                                         </div>
                                                         {skill.level !== undefined && (
-                                                            <div className="mt-3">
-                                                                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                                                                    <span className="flex items-center gap-1">
-                                                                        <BarChartIcon className="h-3 w-3" />Proficiency
-                                                                    </span>
+                                                            <div className="mt-1.5">
+                                                                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                                                    <span className="flex items-center gap-1"><BarChartIcon className="h-3 w-3"/>Proficiency</span>
                                                                     <span>{skill.level}%</span>
                                                                 </div>
-                                                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                                                    <motion.div initial={{ width: 0 }} animate={{ width: `${skill.level}%` }} 
-                                                                        transition={{ duration: 0.5, ease: "easeOut" }} 
-                                                                        className="h-full bg-blue-500" />
+                                                                <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                                                    <motion.div initial={{width:0}} animate={{width:`${skill.level}%`}} transition={{duration:0.5}} className="h-full bg-blue-500"/>
                                                                 </div>
                                                             </div>
                                                         )}
