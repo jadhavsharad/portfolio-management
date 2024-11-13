@@ -21,6 +21,7 @@ interface TimelineEvent {
     title: string
     description: string
     createdAt: string
+    link?: string
 }
 function TimelinePage() {
     const [selectedGroup, setSelectedGroup] = useState<string>('')
@@ -36,7 +37,8 @@ function TimelinePage() {
     const [newEvent, setNewEvent] = useState<Partial<TimelineEvent>>({
         year: undefined,
         title: '',
-        description: ''
+        description: '',
+        link: ''
     })
     const [isLoading, setIsLoading] = useState(false)
     const { toast } = useToast()
@@ -111,7 +113,8 @@ function TimelinePage() {
                 year: newEvent.year!,
                 title: newEvent.title!.trim(),
                 description: newEvent.description!.trim(),
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                link: newEvent.link?.trim()
             }
 
             await updateDoc(timelineRef, {
@@ -119,7 +122,7 @@ function TimelinePage() {
             })
 
             setEvents([eventToAdd, ...events].sort((a, b) => b.year - a.year))
-            setNewEvent({ year: undefined, title: '', description: '' })
+            setNewEvent({ year: undefined, title: '', description: '', link: '' })
             toast({ title: "Success", description: "Event added successfully" })
         } catch (error) {
             console.error('Failed to add event:', error)
@@ -171,7 +174,8 @@ function TimelinePage() {
                 ...editedEvent,
                 year: editedEvent.year || eventToUpdate.year,
                 title: editedEvent.title?.trim() || eventToUpdate.title,
-                description: editedEvent.description?.trim() || eventToUpdate.description
+                description: editedEvent.description?.trim() || eventToUpdate.description,
+                link: editedEvent.link?.trim() || eventToUpdate.link
             }
 
             await updateDoc(timelineRef, {
@@ -569,6 +573,13 @@ function TimelinePage() {
                             aria-label="Event description"
                             required
                         />
+                        <Input
+                            placeholder="Link (optional)"
+                            value={newEvent.link}
+                            onChange={(e) => setNewEvent({ ...newEvent, link: e.target.value })}
+                            disabled={isLoading}
+                            aria-label="Event link"
+                        />
                         <Button 
                             onClick={addEvent} 
                             disabled={isLoading}
@@ -716,6 +727,13 @@ function TimelinePage() {
                                                         className="min-h-[100px]"
                                                         aria-label="Edit event description"
                                                         required
+                                                    />
+                                                    <Input
+                                                        placeholder="Link (optional)"
+                                                        value={editedEvent.link || event.link}
+                                                        onChange={(e) => setEditedEvent({ ...editedEvent, link: e.target.value })}
+                                                        disabled={isLoading}
+                                                        aria-label="Edit event link"
                                                     />
                                                 </div>
                                                 <DialogFooter>
