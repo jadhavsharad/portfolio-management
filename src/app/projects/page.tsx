@@ -129,7 +129,7 @@ function ProjectsPage() {
      */
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
-        if (editingProject) {
+        if (isEditDialogOpen && editingProject) {
             setEditingProject(prev => ({ ...prev!, [name]: value }))
         } else {
             setFormData(prev => ({ ...prev, [name]: value }))
@@ -143,8 +143,7 @@ function ProjectsPage() {
      */
     const handleMediaTypeChange = (value: string) => {
         const mediaType = value as 'image' | 'video'
-        if (editingProject) {
-            // Clear existing media URL when switching types
+        if (isEditDialogOpen && editingProject) {
             setEditingProject(prev => ({ ...prev!, mediaType, mediaUrl: '' }))
         } else {
             setFormData(prev => ({ ...prev, mediaType, mediaUrl: '' }))
@@ -168,7 +167,7 @@ function ProjectsPage() {
      */
     const handleStatusChange = (value: string) => {
         const isCompleted = value !== 'upcoming'
-        if (editingProject) {
+        if (isEditDialogOpen && editingProject) {
             setEditingProject(prev => ({ ...prev!, isCompleted }))
         } else {
             setFormData(prev => ({ ...prev, isCompleted }))
