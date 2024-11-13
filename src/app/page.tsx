@@ -33,7 +33,9 @@ const ACTIVITY_TYPES = {
   skill: 'skill',
   category: 'category',
   certification: 'certification',
-  timeline: 'timeline'
+  timeline: 'timeline',
+  timelineGroup: 'timelineGroup',
+  timelineEvent: 'timelineEvent'
 } as const
 
 // GitHub authentication token from environment variables
@@ -205,16 +207,41 @@ function DashboardPage() {
           timeAgo: getTimeAgo(new Date(cert.updatedAt || cert.date?.seconds * 1000))
         })) || []
 
-        // Process timeline activities
-        const timelineActivities = timelineDoc.data()?.events?.map((event: any) => ({
-          type: ACTIVITY_TYPES.timeline,
-          title: 'Timeline Event',
-          description: event.title,
-          timestamp: new Date(event.createdAt),
-          timeAgo: getTimeAgo(new Date(event.createdAt))
-        })) || []
+        // Process timeline activities with groups and events
+        const timelineActivities: any[] = []
+        const timelineData = timelineDoc.data()
+        
+        if (timelineData) {
+          Object.entries(timelineData).forEach(([groupId, groupData]: [string, any]) => {
+            // Add activity for group creation/update
+            if (groupData.createdAt) {
+              timelineActivities.push({
+                type: ACTIVITY_TYPES.timelineGroup,
+                title: 'Timeline Group Created',
+                description: `Created group: ${groupData.title || groupId}`,
+                timestamp: new Date(groupData.createdAt),
+                timeAgo: getTimeAgo(new Date(groupData.createdAt))
+              })
+            }
 
-        // Combine and sort all non-commit activities by timestamp
+            // Process events within the group
+            if (groupData.events && Array.isArray(groupData.events)) {
+              groupData.events.forEach((event: any) => {
+                if (event.createdAt) {
+                  timelineActivities.push({
+                    type: ACTIVITY_TYPES.timelineEvent,
+                    title: 'Timeline Event Added',
+                    description: `Added "${event.title}" to ${groupData.title || groupId}`,
+                    timestamp: new Date(event.createdAt),
+                    timeAgo: getTimeAgo(new Date(event.createdAt))
+                  })
+                }
+              })
+            }
+          })
+        }
+
+        // Combine and sort all activities by timestamp
         const allActivities = [
           ...storageActivities,
           ...projectActivities,
@@ -223,7 +250,7 @@ function DashboardPage() {
           ...timelineActivities
         ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
         
-        // Update state with most recent 10 activities
+        // Update state with most recent activities
         setRecentActivities(allActivities.slice(0, 10))
       } catch (error) {
         console.error('Error fetching activities:', error)
@@ -377,6 +404,8 @@ function DashboardPage() {
                     case ACTIVITY_TYPES.category: return '/skills';
                     case ACTIVITY_TYPES.certification: return '/certifications';
                     case ACTIVITY_TYPES.timeline: return '/timeline';
+                    case ACTIVITY_TYPES.timelineGroup: return '/timeline';
+                    case ACTIVITY_TYPES.timelineEvent: return '/timeline';
                     default: return '';
                   }
                 };
@@ -384,14 +413,23 @@ function DashboardPage() {
                 return (
                   <div key={index} onClick={() => handleNavigation(getPath())} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                     {/* Activity Icon Container */}
-                    <div className={`h-8 w-8 rounded-full ${activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' : activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' : activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : activity.type === 'storage' ? 'bg-indigo-100 dark:bg-indigo-950/40' : activity.type === ACTIVITY_TYPES.timeline ? 'bg-green-100 dark:bg-green-950/40' : 'bg-purple-100 dark:bg-purple-950/40'} flex items-center justify-center`}>
+                    <div className={`h-8 w-8 rounded-full ${
+                      activity.type === ACTIVITY_TYPES.project ? 'bg-blue-100 dark:bg-blue-950/40' : 
+                      activity.type === ACTIVITY_TYPES.skill ? 'bg-orange-100 dark:bg-orange-950/40' : 
+                      activity.type === ACTIVITY_TYPES.category ? 'bg-yellow-100 dark:bg-yellow-950/40' : 
+                      activity.type === 'storage' ? 'bg-indigo-100 dark:bg-indigo-950/40' : 
+                      activity.type === ACTIVITY_TYPES.timelineGroup ? 'bg-green-100 dark:bg-green-950/40' :
+                      activity.type === ACTIVITY_TYPES.timelineEvent ? 'bg-teal-100 dark:bg-teal-950/40' :
+                      'bg-purple-100 dark:bg-purple-950/40'
+                    } flex items-center justify-center`}>
                       {/* Render appropriate icon based on activity type */}
                       {activity.type === ACTIVITY_TYPES.project && <PackageIcon className="h-4 w-4 text-blue-600 dark:text-blue-300" />}
                       {activity.type === ACTIVITY_TYPES.skill && <CodeIcon className="h-4 w-4 text-orange-600 dark:text-orange-300" />}
                       {activity.type === ACTIVITY_TYPES.category && <FolderPlusIcon className="h-4 w-4 text-yellow-600 dark:text-yellow-300" />}
                       {activity.type === ACTIVITY_TYPES.certification && <GraduationCapIcon className="h-4 w-4 text-purple-600 dark:text-purple-300" />}
                       {activity.type === 'storage' && <UploadIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />}
-                      {activity.type === ACTIVITY_TYPES.timeline && <ClockIcon className="h-4 w-4 text-green-600 dark:text-green-300" />}
+                      {activity.type === ACTIVITY_TYPES.timelineGroup && <ClockIcon className="h-4 w-4 text-green-600 dark:text-green-300" />}
+                      {activity.type === ACTIVITY_TYPES.timelineEvent && <BookOpenIcon className="h-4 w-4 text-teal-600 dark:text-teal-300" />}
                     </div>
                     {/* Activity Details */}
                     <div>

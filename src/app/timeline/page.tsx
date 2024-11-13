@@ -9,11 +9,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { withAuth } from '@/components/hoc/with-auth'
 import { CalendarIcon, Cross2Icon, InfoCircledIcon, PlusIcon, TrashIcon, Pencil1Icon, CheckIcon } from '@radix-ui/react-icons'
 import { db } from '@/lib/firebase'
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
 import { useToast } from '@/hooks/use-toast'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
@@ -26,6 +26,10 @@ interface TimelineEvent {
 }
 
 function TimelinePage() {
+    const [selectedGroup, setSelectedGroup] = useState<string>('events')
+    const [groups, setGroups] = useState<{id: string, createdAt: string}[]>([{id: 'events', createdAt: new Date().toISOString()}])
+    const [newGroupName, setNewGroupName] = useState('')
+    const [showAddGroup, setShowAddGroup] = useState(false)
     const [events, setEvents] = useState<TimelineEvent[]>([])
     const [selectedEvents, setSelectedEvents] = useState<string[]>([])
     const [editingEvent, setEditingEvent] = useState<string | null>(null)
@@ -42,13 +46,14 @@ function TimelinePage() {
 
     useEffect(() => {
         fetchEvents()
-    }, [])
+    }, [selectedGroup])
 
     const fetchEvents = async () => {
         try {
             const docSnap = await getDoc(timelineRef)
             if (docSnap.exists()) {
-                const sortedEvents = [...(docSnap.data().events || [])].sort((a, b) => b.year - a.year)
+                const groupEvents = docSnap.data()[selectedGroup]?.events || []
+                const sortedEvents = [...groupEvents].sort((a, b) => b.year - a.year)
                 setEvents(sortedEvents)
             }
         } catch (error) {
@@ -100,7 +105,7 @@ function TimelinePage() {
             }
 
             await updateDoc(timelineRef, {
-                events: arrayUnion(eventToAdd)
+                [`${selectedGroup}.events`]: arrayUnion(eventToAdd)
             })
 
             setEvents([eventToAdd, ...events].sort((a, b) => b.year - a.year))
@@ -118,7 +123,7 @@ function TimelinePage() {
         setIsLoading(true)
         try {
             await updateDoc(timelineRef, {
-                events: arrayRemove(eventToRemove)
+                [`${selectedGroup}.events`]: arrayRemove(eventToRemove)
             })
             setEvents(events.filter(event => event.createdAt !== eventToRemove.createdAt))
             setSelectedEvents(selectedEvents.filter(id => id !== eventToRemove.createdAt))
@@ -148,10 +153,10 @@ function TimelinePage() {
             }
 
             await updateDoc(timelineRef, {
-                events: arrayRemove(eventToUpdate)
+                [`${selectedGroup}.events`]: arrayRemove(eventToUpdate)
             })
             await updateDoc(timelineRef, {
-                events: arrayUnion(updatedEvent)
+                [`${selectedGroup}.events`]: arrayUnion(updatedEvent)
             })
 
             setEvents(prev => 
@@ -183,7 +188,7 @@ function TimelinePage() {
             const eventsToRemove = events.filter(e => selectedEvents.includes(e.createdAt))
             for (const event of eventsToRemove) {
                 await updateDoc(timelineRef, {
-                    events: arrayRemove(event)
+                    [`${selectedGroup}.events`]: arrayRemove(event)
                 })
             }
             setEvents(events.filter(e => !selectedEvents.includes(e.createdAt)))
@@ -192,6 +197,89 @@ function TimelinePage() {
         } catch (error) {
             console.error('Failed to remove selected events:', error)
             toast({ title: "Error", description: "Failed to remove selected events", variant: "destructive" })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const fetchGroups = async () => {
+        try {
+            const docSnap = await getDoc(timelineRef)
+            if (docSnap.exists()) {
+                const data = docSnap.data()
+                const availableGroups = Object.keys(data).map(key => ({
+                    id: key,
+                    createdAt: data[key].createdAt || new Date().toISOString()
+                }))
+                setGroups(availableGroups)
+            }
+        } catch (error) {
+            console.error('Failed to fetch groups:', error)
+            toast({ title: "Error", description: "Failed to load groups", variant: "destructive" })
+        }
+    }
+
+    useEffect(() => {
+        fetchGroups()
+    }, [])
+
+    const addNewGroup = async () => {
+        if (!newGroupName.trim()) {
+            toast({ title: "Error", description: "Please enter a group name", variant: "destructive" })
+            return
+        }
+
+        const groupId = newGroupName.toLowerCase().replace(/\s+/g, '_')
+
+        if (groups.some(g => g.id === groupId)) {
+            toast({ title: "Error", description: "Group already exists", variant: "destructive" })
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const newGroup = {
+                events: [],
+                createdAt: new Date().toISOString()
+            }
+            
+            await updateDoc(timelineRef, {
+                [groupId]: newGroup
+            })
+            
+            setGroups([...groups, {id: groupId, createdAt: newGroup.createdAt}])
+            setNewGroupName('')
+            setShowAddGroup(false)
+            toast({ title: "Success", description: "Group added successfully" })
+        } catch (error) {
+            console.error('Failed to add group:', error)
+            toast({ title: "Error", description: "Failed to add group", variant: "destructive" })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const removeGroup = async (groupId: string) => {
+        if (groupId === 'events') {
+            toast({ title: "Error", description: "Cannot remove default group", variant: "destructive" })
+            return
+        }
+
+        setIsLoading(true)
+        try {
+            const updateData = {
+                [groupId]: deleteField()
+            }
+            await updateDoc(timelineRef, updateData)
+            
+            setGroups(groups.filter(g => g.id !== groupId))
+            if (selectedGroup === groupId) {
+                setSelectedGroup('events')
+            }
+            toast({ title: "Success", description: "Group removed successfully" })
+        } catch (error) {
+            console.error('Failed to remove group:', error)
+            toast({ title: "Error", description: "Failed to remove group", variant: "destructive" })
         } finally {
             setIsLoading(false)
         }
@@ -211,6 +299,82 @@ function TimelinePage() {
                         </p>
                     </div>
                 </div>
+            </div>
+
+            {/* Group Management Section */}
+            <div className="mb-6 flex items-center gap-4">
+                <Select
+                    value={selectedGroup}
+                    onValueChange={setSelectedGroup}
+                >
+                    <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Select group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {groups.map(group => (
+                            <SelectItem key={group.id} value={group.id}>
+                                {group.id.charAt(0).toUpperCase() + group.id.slice(1).replace(/_/g, ' ')}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Dialog open={showAddGroup} onOpenChange={setShowAddGroup}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                            <PlusIcon className="h-4 w-4 mr-2" />
+                            Add Group
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add New Group</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <Input
+                                placeholder="Enter group name"
+                                value={newGroupName}
+                                onChange={(e) => setNewGroupName(e.target.value)}
+                            />
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowAddGroup(false)}>
+                                Cancel
+                            </Button>
+                            <Button onClick={addNewGroup} disabled={isLoading}>
+                                Add Group
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {selectedGroup !== 'events' && (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm">
+                                <TrashIcon className="h-4 w-4 mr-2" />
+                                Remove Group
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Remove Group</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Are you sure you want to remove this group? All events in this group will be deleted.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() => removeGroup(selectedGroup)}
+                                    className="bg-red-500 hover:bg-red-600"
+                                >
+                                    Remove
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
             </div>
 
             {/* Add Event Section */}
