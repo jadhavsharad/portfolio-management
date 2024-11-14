@@ -23,11 +23,24 @@ interface TimelineEvent {
     createdAt: string
     link?: string
 }
+
+interface TimelineGroup {
+    id: string
+    name: string
+    heading?: string
+    description?: string
+    createdAt: string
+}
+
 function TimelinePage() {
     const [selectedGroup, setSelectedGroup] = useState<string>('')
-    const [groups, setGroups] = useState<{id: string, createdAt: string, name: string}[]>([])
+    const [groups, setGroups] = useState<TimelineGroup[]>([])
     const [newGroupName, setNewGroupName] = useState('')
+    const [newGroupHeading, setNewGroupHeading] = useState('')
+    const [newGroupDescription, setNewGroupDescription] = useState('')
     const [editGroupName, setEditGroupName] = useState('')
+    const [editGroupHeading, setEditGroupHeading] = useState('')
+    const [editGroupDescription, setEditGroupDescription] = useState('')
     const [showAddGroup, setShowAddGroup] = useState(false)
     const [showEditGroup, setShowEditGroup] = useState(false)
     const [events, setEvents] = useState<TimelineEvent[]>([])
@@ -243,13 +256,21 @@ function TimelinePage() {
                     // Create default group if no groups exist
                     const defaultGroup = {
                         name: 'events',
+                        heading: 'Timeline Events',
+                        description: 'A collection of important events',
                         events: [],
                         createdAt: new Date().toISOString()
                     }
                     await updateDoc(timelineRef, {
                         events: defaultGroup
                     })
-                    setGroups([{id: 'events', name: 'events', createdAt: defaultGroup.createdAt}])
+                    setGroups([{
+                        id: 'events',
+                        name: 'events',
+                        heading: defaultGroup.heading,
+                        description: defaultGroup.description,
+                        createdAt: defaultGroup.createdAt
+                    }])
                     setSelectedGroup('events')
                     return
                 }
@@ -257,6 +278,8 @@ function TimelinePage() {
                 const availableGroups = Object.keys(data).map(key => ({
                     id: key,
                     name: data[key].name || key,
+                    heading: data[key].heading,
+                    description: data[key].description,
                     createdAt: data[key].createdAt || new Date().toISOString()
                 }))
                 setGroups(availableGroups)
@@ -267,13 +290,21 @@ function TimelinePage() {
                 // Create document with default group if document doesn't exist
                 const defaultGroup = {
                     name: 'events',
+                    heading: 'Timeline Events',
+                    description: 'A collection of important events',
                     events: [],
                     createdAt: new Date().toISOString()
                 }
                 await updateDoc(timelineRef, {
                     events: defaultGroup
                 })
-                setGroups([{id: 'events', name: 'events', createdAt: defaultGroup.createdAt}])
+                setGroups([{
+                    id: 'events',
+                    name: 'events',
+                    heading: defaultGroup.heading,
+                    description: defaultGroup.description,
+                    createdAt: defaultGroup.createdAt
+                }])
                 setSelectedGroup('events')
             }
         } catch (error) {
@@ -292,6 +323,16 @@ function TimelinePage() {
             return
         }
 
+        if (!newGroupHeading.trim()) {
+            toast({ title: "Error", description: "Please enter a group heading", variant: "destructive" })
+            return
+        }
+
+        if (!newGroupDescription.trim()) {
+            toast({ title: "Error", description: "Please enter a group description", variant: "destructive" })
+            return
+        }
+
         const groupId = newGroupName.toLowerCase().replace(/\s+/g, '_')
 
         if (groups.some(g => g.id === groupId)) {
@@ -303,6 +344,8 @@ function TimelinePage() {
         try {
             const newGroup = {
                 name: groupId,
+                heading: newGroupHeading.trim(),
+                description: newGroupDescription.trim(),
                 [groupId]: [],
                 createdAt: new Date().toISOString()
             }
@@ -311,8 +354,16 @@ function TimelinePage() {
                 [groupId]: newGroup
             })
             
-            setGroups([...groups, {id: groupId, name: groupId, createdAt: newGroup.createdAt}])
+            setGroups([...groups, {
+                id: groupId,
+                name: groupId,
+                heading: newGroup.heading,
+                description: newGroup.description,
+                createdAt: newGroup.createdAt
+            }])
             setNewGroupName('')
+            setNewGroupHeading('')
+            setNewGroupDescription('')
             setShowAddGroup(false)
             toast({ title: "Success", description: "Group added successfully" })
         } catch (error) {
@@ -326,6 +377,16 @@ function TimelinePage() {
     const editGroup = async () => {
         if (!editGroupName.trim()) {
             toast({ title: "Error", description: "Please enter a group name", variant: "destructive" })
+            return
+        }
+
+        if (!editGroupHeading.trim()) {
+            toast({ title: "Error", description: "Please enter a group heading", variant: "destructive" })
+            return
+        }
+
+        if (!editGroupDescription.trim()) {
+            toast({ title: "Error", description: "Please enter a group description", variant: "destructive" })
             return
         }
 
@@ -350,6 +411,8 @@ function TimelinePage() {
             await updateDoc(timelineRef, {
                 [newGroupId]: {
                     name: newGroupId,
+                    heading: editGroupHeading.trim(),
+                    description: editGroupDescription.trim(),
                     [newGroupId]: oldEvents,
                     createdAt: groupData.createdAt
                 }
@@ -360,9 +423,17 @@ function TimelinePage() {
                 [selectedGroup]: deleteField()
             })
             
-            setGroups(groups.map(g => g.id === selectedGroup ? {id: newGroupId, name: newGroupId, createdAt: g.createdAt} : g))
+            setGroups(groups.map(g => g.id === selectedGroup ? {
+                id: newGroupId,
+                name: newGroupId,
+                heading: editGroupHeading.trim(),
+                description: editGroupDescription.trim(),
+                createdAt: g.createdAt
+            } : g))
             setSelectedGroup(newGroupId)
             setEditGroupName('')
+            setEditGroupHeading('')
+            setEditGroupDescription('')
             setShowEditGroup(false)
             toast({ title: "Success", description: "Group renamed successfully" })
         } catch (error) {
@@ -427,7 +498,7 @@ function TimelinePage() {
                     <SelectContent>
                         {groups.map(group => (
                             <SelectItem key={group.id} value={group.id}>
-                                {group.id.charAt(0).toUpperCase() + group.id.slice(1).replace(/_/g, ' ')}
+                                {group.heading || group.id.charAt(0).toUpperCase() + group.id.slice(1).replace(/_/g, ' ')}
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -450,6 +521,19 @@ function TimelinePage() {
                                     placeholder="Enter group name"
                                     value={newGroupName}
                                     onChange={(e) => setNewGroupName(e.target.value)}
+                                    required
+                                />
+                                <Input
+                                    placeholder="Enter group heading"
+                                    value={newGroupHeading}
+                                    onChange={(e) => setNewGroupHeading(e.target.value)}
+                                    required
+                                />
+                                <Textarea
+                                    placeholder="Enter group description"
+                                    value={newGroupDescription}
+                                    onChange={(e) => setNewGroupDescription(e.target.value)}
+                                    required
                                 />
                             </div>
                             <DialogFooter>
@@ -472,13 +556,26 @@ function TimelinePage() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
-                                <DialogTitle>Edit Group Name</DialogTitle>
+                                <DialogTitle>Edit Group</DialogTitle>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <Input
                                     placeholder="Enter new group name"
                                     value={editGroupName}
                                     onChange={(e) => setEditGroupName(e.target.value)}
+                                    required
+                                />
+                                <Input
+                                    placeholder="Enter new group heading"
+                                    value={editGroupHeading}
+                                    onChange={(e) => setEditGroupHeading(e.target.value)}
+                                    required
+                                />
+                                <Textarea
+                                    placeholder="Enter new group description"
+                                    value={editGroupDescription}
+                                    onChange={(e) => setEditGroupDescription(e.target.value)}
+                                    required
                                 />
                             </div>
                             <DialogFooter>
@@ -519,6 +616,23 @@ function TimelinePage() {
                     </AlertDialog>
                 </div>
             </div>
+
+            {/* Group Info Section */}
+            {selectedGroup && groups.find(g => g.id === selectedGroup)?.description && (
+                <div className="mb-6">
+                    <Card className="bg-gray-50 dark:bg-gray-900">
+                        <CardContent className="p-4">
+                            <h2 className="text-lg font-semibold mb-2">
+                                {groups.find(g => g.id === selectedGroup)?.heading || 
+                                 selectedGroup.charAt(0).toUpperCase() + selectedGroup.slice(1).replace(/_/g, ' ')}
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {groups.find(g => g.id === selectedGroup)?.description}
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             {/* Add Event Section */}
             <Card className="mb-4 sm:mb-6 lg:mb-8">

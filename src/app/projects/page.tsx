@@ -16,6 +16,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { CodeIcon, FolderIcon, ImageIcon, InfoIcon, LinkIcon, SparklesIcon, StarIcon } from 'lucide-react'
 import { saveAs } from 'file-saver'
+import { DndContext, DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { GripVerticalIcon } from 'lucide-react'
 
 /**
  * Initial form state for creating new projects
@@ -74,6 +78,65 @@ interface Project {
     createdAt: string
     updatedAt: string
     selected?: boolean
+}
+
+function SortableTableRow({ project, onEdit, onDelete, onToggleSelect }: { 
+    project: Project, 
+    onEdit: (p: Project) => void, 
+    onDelete: (id: string) => void,
+    onToggleSelect: (id: string) => void 
+}) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: project.id })
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    }
+
+    return (
+        <TableRow ref={setNodeRef} style={style} className="hover:bg-teal-50/50 dark:hover:bg-teal-900/20 border-b dark:border-gray-800">
+            <TableCell>
+                <div className="flex items-center justify-center">
+                    <Button variant="ghost" size="sm" className={`h-6 w-6 p-0 ${project.selected ? 'bg-teal-100 dark:bg-teal-900' : ''}`} onClick={() => onToggleSelect(project.id)}>
+                        <CheckIcon className={`h-4 w-4 ${project.selected ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                    </Button>
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="flex items-center gap-2">
+                    <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                        <GripVerticalIcon className="h-4 w-4 text-gray-400" />
+                    </button>
+                    <span className="font-medium">{project.title}</span>
+                </div>
+            </TableCell>
+            <TableCell className="text-xs text-muted-foreground max-w-[200px] sm:max-w-[300px] md:max-w-[400px] truncate">{project.description}</TableCell>
+            <TableCell>
+                {project.link ? (
+                    <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-teal-400 dark:text-teal-500 hover:text-teal-500 dark:hover:text-teal-400" aria-label={`Visit ${project.title} project`}>Visit <ExternalLinkIcon className="h-3 w-3" aria-hidden="true" /></a>
+                ) : (
+                    <span className="text-xs text-gray-400 dark:text-gray-500">Coming Soon</span>
+                )}
+            </TableCell>
+            <TableCell>
+                <span className={`text-xs ${project.isCompleted ? 'text-green-500 dark:text-green-400' : 'text-amber-500 dark:text-amber-400'}`}>{project.isCompleted ? 'Completed' : 'Upcoming'}</span>
+            </TableCell>
+            <TableCell>
+                <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(project)} className="text-teal-500 hover:text-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:hover:text-teal-300 dark:hover:bg-teal-900/20" aria-label={`Edit ${project.title}`}><Pencil1Icon className="h-3 w-3" aria-hidden="true" /></Button>
+                    <Button variant="ghost" size="sm" onClick={() => onDelete(project.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20" aria-label={`Delete ${project.title}`}><Cross2Icon className="h-3 w-3" aria-hidden="true" /></Button>
+                </div>
+            </TableCell>
+        </TableRow>
+    )
 }
 
 function ProjectsPage() {
@@ -363,6 +426,46 @@ function ProjectsPage() {
         </small>
     )
 
+    const sensors = useSensors(
+        useSensor(MouseSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 200,
+                tolerance: 8,
+            },
+        })
+    )
+
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event
+        
+        if (!over || active.id === over.id) return
+
+        const oldIndex = projects.findIndex(p => p.id === active.id)
+        const newIndex = projects.findIndex(p => p.id === over.id)
+        
+        const reorderedProjects = arrayMove(projects, oldIndex, newIndex)
+        setProjects(reorderedProjects)
+
+        try {
+            await setDoc(projectsDocRef, { projects: reorderedProjects })
+            toast({ title: "Success", description: "Project order updated" })
+        } catch (error) {
+            console.error('Failed to update project order:', error)
+            toast({ 
+                title: "Error", 
+                description: "Failed to update project order", 
+                variant: "destructive" 
+            })
+            // Revert to original order on error
+            setProjects(projects)
+        }
+    }
+
     return (
         <div className="container max-w-7xl mx-auto p-4 sm:p-6">
             <div className="mb-6 sm:mb-8">
@@ -468,53 +571,44 @@ function ProjectsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="rounded-lg border dark:border-gray-800/50 overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="hover:bg-transparent border-b dark:border-gray-800">
-                                    <TableHead className="w-[40px]">
-                                        <div className="flex items-center justify-center">
-                                            <Button variant="ghost" size="sm" className={`h-6 w-6 p-0 ${(selectedProjects.length !== 0 && selectedProjects.length) === projects.length ? 'bg-teal-100 dark:bg-teal-900' : ''}`} onClick={toggleSelectAll}>
-                                                <CheckIcon className={`h-4 w-4 ${selectedProjects.length === projects.length ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
-                                            </Button>
-                                        </div>
-                                    </TableHead>
-                                    {TABLE_HEADERS.map((header, index) => (
-                                        <TableHead key={index} className={header.className}>{header.label}</TableHead>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {projects.map((project) => (
-                                    <TableRow key={project.id} className="hover:bg-teal-50/50 dark:hover:bg-teal-900/20 border-b dark:border-gray-800">
-                                        <TableCell>
+                        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="hover:bg-transparent border-b dark:border-gray-800">
+                                        <TableHead className="w-[40px]">
                                             <div className="flex items-center justify-center">
-                                                <Button variant="ghost" size="sm" className={`h-6 w-6 p-0 ${project.selected ? 'bg-teal-100 dark:bg-teal-900' : ''}`} onClick={() => toggleProjectSelection(project.id)}>
-                                                    <CheckIcon className={`h-4 w-4 ${project.selected ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    className={`h-6 w-6 p-0 ${(selectedProjects.length !== 0 && selectedProjects.length) === projects.length ? 'bg-teal-100 dark:bg-teal-900' : ''}`} 
+                                                    onClick={toggleSelectAll}
+                                                >
+                                                    <CheckIcon className={`h-4 w-4 ${selectedProjects.length === projects.length ? 'text-teal-600 dark:text-teal-400' : 'text-gray-300 dark:text-gray-600'}`} />
                                                 </Button>
                                             </div>
-                                        </TableCell>
-                                        <TableCell className="font-medium">{project.title}</TableCell>
-                                        <TableCell className="text-xs text-muted-foreground max-w-[200px] sm:max-w-[300px] md:max-w-[400px] truncate">{project.description}</TableCell>
-                                        <TableCell>
-                                            {project.link ? (
-                                                <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-teal-400 dark:text-teal-500 hover:text-teal-500 dark:hover:text-teal-400" aria-label={`Visit ${project.title} project`}>Visit <ExternalLinkIcon className="h-3 w-3" aria-hidden="true" /></a>
-                                            ) : (
-                                                <span className="text-xs text-gray-400 dark:text-gray-500">Coming Soon</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            <span className={`text-xs ${project.isCompleted ? 'text-green-500 dark:text-green-400' : 'text-amber-500 dark:text-amber-400'}`}>{project.isCompleted ? 'Completed' : 'Upcoming'}</span>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex gap-1">
-                                                <Button variant="ghost" size="sm" onClick={() => openEditDialog(project)} className="text-teal-500 hover:text-teal-600 hover:bg-teal-50 dark:text-teal-400 dark:hover:text-teal-300 dark:hover:bg-teal-900/20" aria-label={`Edit ${project.title}`}><Pencil1Icon className="h-3 w-3" aria-hidden="true" /></Button>
-                                                <Button variant="ghost" size="sm" onClick={() => confirmDelete(project.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20" aria-label={`Delete ${project.title}`}><Cross2Icon className="h-3 w-3" aria-hidden="true" /></Button>
-                                            </div>
-                                        </TableCell>
+                                        </TableHead>
+                                        {TABLE_HEADERS.map((header, index) => (
+                                            <TableHead key={index} className={header.className}>
+                                                {header.label}
+                                            </TableHead>
+                                        ))}
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <SortableContext items={projects.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                                    <TableBody>
+                                        {projects.map((project) => (
+                                            <SortableTableRow
+                                                key={project.id}
+                                                project={project}
+                                                onEdit={openEditDialog}
+                                                onDelete={confirmDelete}
+                                                onToggleSelect={toggleProjectSelection}
+                                            />
+                                        ))}
+                                    </TableBody>
+                                </SortableContext>
+                            </Table>
+                        </DndContext>
                     </div>
                     {selectionNote}
                 </CardContent>
