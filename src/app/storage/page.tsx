@@ -14,6 +14,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { RefreshCwIcon, VideoIcon, DatabaseIcon, Trash2Icon, Share2Icon, InboxIcon, UploadCloudIcon, HardDriveIcon, ClockIcon, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { withAuth } from '@/components/hoc/with-auth'
 
 // Type definition for file metadata
 interface BlobFile {
@@ -24,7 +25,7 @@ interface BlobFile {
     shareableUrl?: string;
 }
 
-export default function StoragePage() {
+export default withAuth(function StoragePage() {
     // State management
     const [files, setFiles] = useState<BlobFile[]>([]);
     const [loading, setLoading] = useState(false);
@@ -465,4 +466,4 @@ export default function StoragePage() {
             {renderUploadProgress()}
         </div>
     );
-}
+})
